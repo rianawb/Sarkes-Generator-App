@@ -394,7 +394,12 @@ def process_patient_block(block, db):
     
     seen_adv = set(final_advices)
     for adv in advices:
-        subs = [s.strip().lstrip('-').strip() for s in adv.split('\n')]
+        # MODIFIKASI: Deteksi pemisah " - " untuk multi-saran dalam satu baris DB
+        # Contoh: "Saran A - Saran B" menjadi dua baris.
+        # Kita ganti " - " dengan "\n" sebelum split.
+        normalized_adv = adv.replace(" - ", "\n")
+        
+        subs = [s.strip().lstrip('-').strip() for s in normalized_adv.split('\n')]
         for sub in subs:
             if sub and sub not in seen_adv:
                 final_advices.append(sub)
