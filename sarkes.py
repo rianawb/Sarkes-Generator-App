@@ -162,6 +162,10 @@ def check_criteria_match(input_val, criteria):
     
     if not criteria or criteria.lower() == 'nan':
         return True # Tidak ada kriteria khusus = Match
+
+    # --- MODIFIKASI: Support untuk placeholder [text_input] sebagai wildcard ---
+    if "[text_input]" in criteria:
+        return True
         
     # 1. Cek Text Match (Case Insensitive)
     if criteria.lower() in input_val.lower():
@@ -260,6 +264,24 @@ def replace_placeholders(text, row_input, matched_code_variant):
         elif "D" in tokens or (matched_code_variant and "D" in matched_code_variant): replacement = "kanan"
         elif "S" in tokens or (matched_code_variant and "S" in matched_code_variant): replacement = "kiri"
         processed_text = processed_text.replace("[D; S; DS]", replacement)
+
+    # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
+    # Input format: "Leukosituria 25(+1), sedimen 5-10"
+    # Template: "Leukosituria [text_input]/uL, sedimen leukosit [text_input]/LPB"
+    if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
+        # Hapus nama pemeriksaan dari awal string
+        clean_input = re.sub(r"^(Leukosituria|Hematuria)\s*", "", row_input, flags=re.IGNORECASE).strip()
+        
+        # Split berdasarkan ", sedimen" atau "sedimen"
+        # Regex: ambil bagian depan (val1) dan belakang (val2) yang dipisah "sedimen"
+        match = re.search(r"^(.*?)(?:,?\s*sedimen\s*)(.*)$", clean_input, re.IGNORECASE)
+        if match:
+            val1 = match.group(1).strip()
+            val2 = match.group(2).strip()
+            # Replace berurutan
+            processed_text = processed_text.replace("[text_input]", val1, 1)
+            processed_text = processed_text.replace("[text_input]", val2, 1)
+            return processed_text
 
     # --- Logic 2: Gigi (Parsing Khusus) ---
     if "Gigi: Gigi Hilang" in text:
