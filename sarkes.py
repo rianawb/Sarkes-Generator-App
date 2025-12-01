@@ -440,7 +440,7 @@ st.set_page_config(page_title="Sarkes Generator", layout="wide")
 st.markdown("""
     <style>
     div.stButton > button:first-child {
-        background-color: #54E90F;
+        background-color: #009b54;
         color: white;
         border: none;
     }
