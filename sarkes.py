@@ -309,15 +309,12 @@ def replace_placeholders(text, row_input, matched_code_variant):
         return processed_text
 
     # --- Logic 3: Numeric Placeholders ---
-    # Ekstrak angka dari input (termasuk desimal)
     numbers = re.findall(r"[-+]?\d*\.\d+|\d+", row_input)
     
-    # Tensi [XXX/XX]
     if "[XXX/XX]" in processed_text and "/" in row_input:
         match = re.search(r"(\d+/\d+)", row_input)
         if match: processed_text = processed_text.replace("[XXX/XX]", match.group(1))
     
-    # Placeholder standar [XX], [XXX]
     placeholders = re.findall(r"\[[A-Z\.]+\]", processed_text)
     numeric_placeholders = [p for p in placeholders if "OD" not in p and "AD" not in p and "DS" not in p and "text" not in p and "G" not in p]
     
@@ -438,6 +435,23 @@ def process_patient_block(block, db):
 # ==========================================
 
 st.set_page_config(page_title="Sarkes Generator", layout="wide")
+
+# Tambahkan CSS custom untuk tombol
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        background-color: #54E90F;
+        color: white;
+        border: none;
+    }
+    div.stButton > button:hover {
+        background-color: #4ed60e;
+        color: white;
+        border: none;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 st.title("Sarkes Generator (Resume MCU)")
 st.markdown("""
 Aplikasi ini menyusun Resume Hasil Medical Check Up berdasarkan database internal.
