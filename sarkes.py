@@ -263,13 +263,15 @@ def replace_placeholders(text, row_input, matched_code_variant):
 
     # --- Logic 2: Gigi (Parsing Khusus) ---
     if "Gigi: Gigi Hilang" in text:
-        clean_input = row_input.replace("Gigi", "").strip()
+        # Regex Case Insensitive untuk menghapus prefix "Gigi "
+        clean_input = re.sub(r"^Gigi\s*", "", row_input, flags=re.IGNORECASE).strip()
         segments = [s.strip() for s in clean_input.split(',')]
         dental_map = {}
         for seg in segments:
             parts = seg.split()
             if len(parts) >= 1:
-                code = parts[0]
+                # Normalisasi kode input ke UPPERCASE agar sesuai template (x -> X)
+                code = parts[0].upper()
                 val = parts[1] if len(parts) > 1 else ""
                 dental_map[code] = val
         
@@ -311,7 +313,7 @@ def replace_placeholders(text, row_input, matched_code_variant):
     if "[text_input]" in processed_text:
         # Gunakan remainder jika mungkin, atau fallback ke sisa input
         val = row_input # Default full
-        # Coba hapus kode matched
+        # Coba hapus kode matched (Case Insensitive)
         if matched_code_variant and row_input.lower().startswith(matched_code_variant.lower()):
             val = row_input[len(matched_code_variant):].strip()
         processed_text = processed_text.replace("[text_input]", val)
@@ -354,11 +356,14 @@ def process_patient_block(block, db):
     needs_lifestyle = False
     
     for line in exam_lines:
-        if line == "FWN":
+        line_clean = line.strip()
+        # Case Insensitive Check untuk FWN
+        if line_clean.upper() == "FWN":
             work_status = "Saran Kesehatan Kerja: Sehat untuk bekerja dengan catatan"
             continue
-        if line.startswith("Temporary "):
-            desc = line.replace("Temporary ", "")
+        # Case Insensitive Check untuk Temporary
+        if line_clean.lower().startswith("temporary "):
+            desc = re.sub(r"^temporary\s+", "", line_clean, flags=re.IGNORECASE)
             work_status = f"Saran Kesehatan Kerja: Tidak sehat untuk bekerja untuk sementara waktu ({desc})"
             continue
             
