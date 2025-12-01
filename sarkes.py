@@ -164,36 +164,46 @@ def check_criteria_match(input_val, criteria):
         return True # Tidak ada kriteria khusus = Match
         
     # 1. Cek Text Match (Case Insensitive)
-    # Contoh: Criteria="Bising", Input="Bising" atau "Bising halus"
     if criteria.lower() in input_val.lower():
         return True
         
-    # 2. Cek Numeric Range
-    # Contoh: Criteria=">100", Input="110"
-    # Cari angka di input
+    # 2. Bypass Khusus
+    # Kasus Gigi "Jumlah 1-32" (tidak perlu diparsing angka)
+    if "jumlah" in criteria.lower(): 
+        return True
+    # Kasus Tensi (ada slash)
+    if "/" in criteria: 
+        return True 
+
+    # 3. Cek Numeric Logic
     nums = re.findall(r"[-+]?\d*\.\d+|\d+", input_val)
     if not nums: return False
+    val = float(nums[0])
     
     try:
-        val = float(nums[0]) # Ambil angka pertama
-        # Parsing sederhana untuk > >= < <= -
-        if '-' in criteria and len(criteria.split('-')) == 2:
-            low, high = map(float, criteria.split('-'))
-            return low <= val <= high
-        elif '>=' in criteria:
-            limit = float(criteria.replace('>=', ''))
-            return val >= limit
-        elif '>' in criteria:
-            limit = float(criteria.replace('>', ''))
-            return val > limit
-        elif '<=' in criteria:
-            limit = float(criteria.replace('<=', ''))
-            return val <= limit
-        elif '<' in criteria:
-            limit = float(criteria.replace('<', ''))
-            return val < limit
+        # Range Check (e.g., 100-125)
+        if '-' in criteria:
+            parts = criteria.split('-')
+            if len(parts) == 2:
+                low_s = re.findall(r"[-+]?\d*\.\d+|\d+", parts[0])
+                high_s = re.findall(r"[-+]?\d*\.\d+|\d+", parts[1])
+                if low_s and high_s:
+                    return float(low_s[0]) <= val <= float(high_s[0])
+        
+        # Inequality Check (e.g., >100, <12.0, HB <12.0)
+        # Bersihkan string dari karakter non-math (kecuali titik dan operator)
+        clean_crit = criteria.upper().replace("HB", "").replace(" ", "")
+        
+        limit_s = re.findall(r"[-+]?\d*\.\d+|\d+", clean_crit)
+        if not limit_s: return False
+        limit = float(limit_s[0])
+        
+        if '>=' in clean_crit: return val >= limit
+        elif '<=' in clean_crit: return val <= limit
+        elif '>' in clean_crit: return val > limit
+        elif '<' in clean_crit: return val < limit
     except:
-        pass # Gagal parsing angka, abaikan
+        pass # Gagal parsing, return False
         
     return False
 
