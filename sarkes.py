@@ -6,7 +6,6 @@ import re
 # ==========================================
 # 1. DATABASE (EMBEDDED & DIOPTIMALKAN)
 # ==========================================
-# Struktur disesuaikan agar KODE dan PARAMETER berpasangan dengan logika input user.
 csv_data = """KATEGORI,JENIS PEMERIKSAAN,KODE,BATAS NILAI/PARAMETER,KESIMPULAN,SARAN KHUSUS
 FISIK,Nadi,Taki,>100,Takikardia (nadi [XXX] kali/menit),Lakukan pemeriksaan EKG dan konsultasi dengan dokter spesialis jantung jika ada keluhan berdebar-debar atau nyeri dada
 FISIK,Nadi,Bradi,<60,Bradikardia (nadi [XX] kali/menit),"Lakukan pemeriksaan EKG dan konsultasi dengan dokter spesialis jantung jika ada keluhan berdebar-debar, pingsan atau nyeri dada"
@@ -117,7 +116,7 @@ EKG,EKG,EKG RAD,50-99,"EKG: Sinus rhythm HR [XX] bpm, RAD",Konsultasi dengan dok
 EKG,EKG,EKG LAD,50-99,"EKG: Sinus rhythm HR [XX] bpm, LAD",Konsultasi dengan dokter spesialis jantung jika ada keluhan terkait hasil EKG abnormal
 TREADMILL,Treadmill,TMT,Iskemik,Treadmill test: Respon ischemic positive,Konsultasi dengan dokter spesialis jantung untuk pemeriksaan dan tatalaksana lebih lanjut terkait hasil Treadmill Test abnormal
 USG,USG Abdomen,USG Abd,[text_input],USG Whole Abdomen: [text_input],Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil USG Abdomen abnormal
-USG,USG Mammae,USG MM [text_input],[text_input],USG Mammae: [text_input],Konsultasi dengan dokter spesialis bedah onkologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil USG Mammae abnormal
+USG,USG Mammae,USG MM,[text_input],USG Mammae: [text_input],Konsultasi dengan dokter spesialis bedah onkologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil USG Mammae abnormal
 SSBC,SSBC,SSBC,[text_input],SSBC: [text_input],Konsultasi dengan dokter spesialis obsgyn untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil SSBC abnormal
 KONSUL,Konsul Gizi,Konsul Gizi,,,Konsultasi dengan dokter spesialis gizi klinik untuk tata laksana lebih lanjut terkait obesitas
 ANAMNESIS,Keluhan,Keluhan,[text_input],Keluhan saat ini: [text_input],Konsultasi dengan dokter untuk pemeriksaan dan tata laksana lebih lanjut terkait keluhan saat ini
@@ -128,14 +127,13 @@ ANAMNESIS,Keluhan,Keluhan,[text_input],Keluhan saat ini: [text_input],Konsultasi
 # ==========================================
 
 def load_db(csv_text):
-    return pd.read_csv(io.StringIO(csv_text))
+    # Load sebagai string agar data kosong tidak otomatis jadi NaN (float)
+    df = pd.read_csv(io.StringIO(csv_text), dtype=str)
+    # Ganti NaN dengan string kosong
+    return df.fillna("")
 
 def expand_code_variants(row_code):
-    """
-    Mengubah kode DB dengan format [A; B] menjadi list kode terpisah.
-    Contoh: '[OD; OS; ODS] Miop' -> ['OD Miop', 'OS Miop', 'ODS Miop']
-    """
-    if pd.isna(row_code): return []
+    if not row_code: return []
     row_code = str(row_code).strip()
     
     # Cari pola [A; B; C]
@@ -160,22 +158,30 @@ def check_criteria_match(input_val, criteria):
     input_val = str(input_val).strip()
     criteria = str(criteria).strip()
     
-    if not criteria or criteria.lower() == 'nan':
-        return True # Tidak ada kriteria khusus = Match
+    # Jika kriteria kosong, anggap match
+    if not criteria: return True
 
-    # --- MODIFIKASI: Support untuk placeholder [text_input] sebagai wildcard ---
+    # Support untuk placeholder [text_input] sebagai wildcard
     if "[text_input]" in criteria:
         return True
         
+    # --- LOGIKA BARU UNTUK RDM (GDP & HbA1c) ---
+    # Jika input mengandung "RDM", maka criteria HARUS mengandung "RDM" juga.
+    # Jika input TIDAK mengandung "RDM", maka criteria TIDAK BOLEH mengandung "RDM".
+    input_has_rdm = "RDM" in input_val.upper()
+    criteria_has_rdm = "RDM" in criteria.upper()
+    
+    if input_has_rdm != criteria_has_rdm:
+        return False
+    # ---------------------------------------------
+
     # 1. Cek Text Match (Case Insensitive)
     if criteria.lower() in input_val.lower():
         return True
         
     # 2. Bypass Khusus
-    # Kasus Gigi "Jumlah 1-32" (tidak perlu diparsing angka)
     if "jumlah" in criteria.lower(): 
         return True
-    # Kasus Tensi (ada slash)
     if "/" in criteria: 
         return True 
 
@@ -238,7 +244,7 @@ def replace_placeholders(text, row_input, matched_code_variant):
     """
     Mengganti placeholder dengan nilai, cerdas konteks (OD/OS, dll).
     """
-    if pd.isna(text): return text
+    if not text: return ""
     processed_text = text
     
     # --- Logic 1: Mata & Telinga Contextual Replacement ---
@@ -266,33 +272,24 @@ def replace_placeholders(text, row_input, matched_code_variant):
         processed_text = processed_text.replace("[D; S; DS]", replacement)
 
     # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
-    # Input format: "Leukosituria 25(+1), sedimen 5-10"
-    # Template: "Leukosituria [text_input]/uL, sedimen leukosit [text_input]/LPB"
     if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
-        # Hapus nama pemeriksaan dari awal string
         clean_input = re.sub(r"^(Leukosituria|Hematuria)\s*", "", row_input, flags=re.IGNORECASE).strip()
-        
-        # Split berdasarkan ", sedimen" atau "sedimen"
-        # Regex: ambil bagian depan (val1) dan belakang (val2) yang dipisah "sedimen"
         match = re.search(r"^(.*?)(?:,?\s*sedimen\s*)(.*)$", clean_input, re.IGNORECASE)
         if match:
             val1 = match.group(1).strip()
             val2 = match.group(2).strip()
-            # Replace berurutan
             processed_text = processed_text.replace("[text_input]", val1, 1)
             processed_text = processed_text.replace("[text_input]", val2, 1)
             return processed_text
 
     # --- Logic 2: Gigi (Parsing Khusus) ---
     if "Gigi: Gigi Hilang" in text:
-        # Regex Case Insensitive untuk menghapus prefix "Gigi "
         clean_input = re.sub(r"^Gigi\s*", "", row_input, flags=re.IGNORECASE).strip()
         segments = [s.strip() for s in clean_input.split(',')]
         dental_map = {}
         for seg in segments:
             parts = seg.split()
             if len(parts) >= 1:
-                # Normalisasi kode input ke UPPERCASE agar sesuai template (x -> X)
                 code = parts[0].upper()
                 val = parts[1] if len(parts) > 1 else ""
                 dental_map[code] = val
@@ -333,7 +330,6 @@ def replace_placeholders(text, row_input, matched_code_variant):
 
     # --- Logic 4: Text Input / Sisa ---
     if "[text_input]" in processed_text:
-        # Gunakan remainder jika mungkin, atau fallback ke sisa input
         val = row_input # Default full
         # Coba hapus kode matched (Case Insensitive)
         if matched_code_variant and row_input.lower().startswith(matched_code_variant.lower()):
@@ -401,10 +397,10 @@ def process_patient_block(block, db):
             raw_adv = str(match_row['SARAN KHUSUS'])
             final_adv = replace_placeholders(raw_adv, line, matched_code)
             
-            if final_conc and final_conc != 'nan':
+            if final_conc:
                 conclusions.append(final_conc)
                 if get_lifestyle_advice(final_conc): needs_lifestyle = True
-            if final_adv and final_adv != 'nan':
+            if final_adv:
                 advices.append(final_adv)
         else:
             # Tidak ada match -> Tampilkan input mentah
