@@ -402,7 +402,7 @@ def process_patient_block(block, db):
 st.set_page_config(page_title="Sarkes Generator", layout="wide")
 st.title("Sarkes Generator (Resume MCU)")
 st.markdown("""
-Aplikasi ini menyusun Resume Hasil Medical Check Up berdasarkan database standar.
+Aplikasi ini menyusun Resume Hasil Medical Check Up berdasarkan database internal.
 **Cara Pakai:**
 1. Masukkan data pasien di kolom input (Single atau Multi-pasien dengan pemisah `===PATIENT===`).
 2. Klik tombol **Proses**.
