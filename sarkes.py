@@ -227,6 +227,8 @@ def find_best_match(input_line, db):
     for idx, row in db.iterrows():
         # Dapatkan semua variasi kode untuk baris ini
         code_variants = expand_code_variants(row['KODE'])
+        # Sort by length descending agar match yang terpanjang dulu (misal: 'ADS' sebelum 'AD')
+        code_variants.sort(key=len, reverse=True)
         
         for code in code_variants:
             # Cek apakah input diawali kode ini
@@ -405,7 +407,7 @@ def process_patient_block(block, db):
 
     # MODIFIKASI: Penyusunan Output tanpa Umur/Gender
     output_str = f"{p_id}\n{p_name}\n\nKesimpulan:\n"
-    for c in conclusions: output_str += f"- {c}\n"
+    for c in conclusions: output_str += f"{c}\n"
     
     output_str += "\nSaran:\n"
     final_advices = []
@@ -425,7 +427,7 @@ def process_patient_block(block, db):
                 final_advices.append(sub)
                 seen_adv.add(sub)
                 
-    for fa in final_advices: output_str += f"- {fa}\n"
+    for fa in final_advices: output_str += f"{fa}\n"
     
     output_str += f"\n{work_status}"
     return output_str
