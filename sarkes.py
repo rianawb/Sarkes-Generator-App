@@ -458,7 +458,7 @@ Aplikasi ini menyusun Resume Hasil Medical Check Up berdasarkan database interna
 
 **Cara Pakai:**
 
-1. Masukkan data pasien di kolom input (Single atau Multi-pasien dengan pemisah `===PATIENT===`).
+1. Masukkan data pasien di kolom input (Untuk Multi-pasien gunakan pemisah `===PATIENT===`).
 2. Klik tombol **Proses**.
 """, unsafe_allow_html=True)
 
@@ -470,7 +470,7 @@ except Exception as e:
     st.error(f"Gagal memuat database: {e}")
     st.stop()
 
-input_text = st.text_area("Input Data Pasien", height=300, placeholder="001\nTony Stark\nJantung Bising\nODS Miop TKM\nFWN")
+input_text = st.text_area("Input Data Pasien", height=300, placeholder="001\nBudi Santoso\nJantung Bising\nODS Miop TKM\nFWN")
 
 if st.button("Proses Sarkes"):
     if not input_text.strip():
