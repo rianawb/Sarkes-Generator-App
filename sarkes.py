@@ -458,7 +458,7 @@ Aplikasi untuk menyusun Resume Hasil Medical Check Up berdasarkan database pemer
 
 **Cara Pakai:**
 
-1. Masukkan data pasien dan kode pemeriksaan di kolom input (Single atau Multi-pasien dengan pemisah `===PATIENT===`).
+1. Masukkan data pasien dan kode pemeriksaan di kolom input (Untuk Multi-pasien gunakan pemisah `===PATIENT===`).
 2. Klik tombol **Proses Sarkes**.
 """)
 
