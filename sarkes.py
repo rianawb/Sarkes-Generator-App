@@ -470,7 +470,7 @@ except Exception as e:
     st.error(f"Gagal memuat database: {e}")
     st.stop()
 
-input_text = st.text_area("Input Data Pasien", height=300, placeholder="001\nBudi Santoso\nJantung Bising\nODS Miop TKM\nFWN")
+input_text = st.text_area("Input Data Pasien", height=300, placeholder="001\nTony Stark\nJantung Bising\nODS Miop TKM\nFWN")
 
 if st.button("Proses Sarkes"):
     if not input_text.strip():
