@@ -454,12 +454,12 @@ st.markdown("""
 
 st.title("Sarkes Generator (Resume MCU)")
 st.markdown("""
-Aplikasi untuk menyusun Resume Hasil Medical Check Up berdasarkan database internal.
+Aplikasi untuk menyusun Resume Hasil Medical Check Up berdasarkan database pemeriksaan.
 
 **Cara Pakai:**
 
-1. Masukkan data pasien dna kode pemeriksaan di kolom input (Single atau Multi-pasien dengan pemisah `===PATIENT===`).
-2. Klik tombol **Proses**.
+1. Masukkan data pasien dan kode pemeriksaan di kolom input (Single atau Multi-pasien dengan pemisah `===PATIENT===`).
+2. Klik tombol **Proses Sarkes**.
 """)
 
 # Load DB
