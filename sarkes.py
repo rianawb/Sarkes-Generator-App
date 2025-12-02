@@ -440,7 +440,7 @@ st.set_page_config(page_title="Sarkes Generator", layout="wide")
 st.markdown("""
     <style>
     div.stButton > button:first-child {
-        background-color: #54E90F;
+        background-color: #009b54;
         color: white;
         border: none;
     }
@@ -454,13 +454,13 @@ st.markdown("""
 
 st.title("Sarkes Generator (Resume MCU)")
 st.markdown("""
-Aplikasi ini menyusun Resume Hasil Medical Check Up berdasarkan database internal.
+Aplikasi ini menyusun Resume Hasil Medical Check Up berdasarkan database internal. <a href="https://docs.google.com/spreadsheets/d/1VVD2VMYPVzjR9HAtJkdykx4dQZsONfSUPQMowXUTpKQ/edit?usp=sharing" target="_blank">Lihat Database</a>
 
 **Cara Pakai:**
 
 1. Masukkan data pasien di kolom input (Single atau Multi-pasien dengan pemisah `===PATIENT===`).
 2. Klik tombol **Proses**.
-""")
+""", unsafe_allow_html=True)
 
 # Load DB
 try:
