@@ -454,7 +454,7 @@ st.markdown("""
 
 st.title("Sarkes Generator (Resume MCU)")
 st.markdown("""
-Aplikasi ini menyusun Resume Hasil Medical Check Up berdasarkan database internal. <a href="https://docs.google.com/spreadsheets/d/1VVD2VMYPVzjR9HAtJkdykx4dQZsONfSUPQMowXUTpKQ/edit?usp=sharing" target="_blank">Lihat Database</a>
+Aplikasi untuk menyusun Resume Hasil Medical Check Up berdasarkan database. <a href="https://docs.google.com/spreadsheets/d/1VVD2VMYPVzjR9HAtJkdykx4dQZsONfSUPQMowXUTpKQ/edit?usp=sharing" target="_blank">Lihat Database</a>
 
 **Cara Pakai:**
 
