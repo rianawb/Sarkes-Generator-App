@@ -4,8 +4,32 @@ import io
 import re
 
 # ==========================================
-# 1. DATABASE (EMBEDDED & DIOPTIMALKAN)
+# 1. KONFIGURASI HALAMAN & DATABASE
 # ==========================================
+
+# Menambahkan page_icon (ikon tab browser)
+st.set_page_config(
+    page_title="Sarkes Generator", 
+    layout="wide", 
+    page_icon="🏥"
+)
+
+# CSS Custom untuk Tombol & Tampilan
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        background-color: #009b54;
+        color: white;
+        border: none;
+    }
+    div.stButton > button:hover {
+        background-color: #4ed60e;
+        color: white;
+        border: none;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 csv_data = """KATEGORI,JENIS PEMERIKSAAN,KODE,BATAS NILAI/PARAMETER,KESIMPULAN,SARAN KHUSUS
 FISIK,Nadi,Taki,>100,Takikardia (nadi [XXX] kali/menit),Lakukan pemeriksaan EKG dan konsultasi dengan dokter spesialis jantung jika ada keluhan berdebar-debar atau nyeri dada
 FISIK,Nadi,Bradi,<60,Bradikardia (nadi [XX] kali/menit),"Lakukan pemeriksaan EKG dan konsultasi dengan dokter spesialis jantung jika ada keluhan berdebar-debar, pingsan atau nyeri dada"
@@ -170,8 +194,6 @@ def check_criteria_match(input_val, criteria):
         return True
         
     # --- LOGIKA BARU UNTUK RDM (GDP & HbA1c) ---
-    # Jika input mengandung "RDM", maka criteria HARUS mengandung "RDM" juga.
-    # Jika input TIDAK mengandung "RDM", maka criteria TIDAK BOLEH mengandung "RDM".
     input_has_rdm = "RDM" in input_val.upper()
     criteria_has_rdm = "RDM" in criteria.upper()
     
@@ -217,39 +239,27 @@ def check_criteria_match(input_val, criteria):
         elif '>' in clean_crit: return val > limit
         elif '<' in clean_crit: return val < limit
     except:
-        pass # Gagal parsing, return False
+        pass 
         
     return False
 
 def find_best_match(input_line, db):
-    """
-    Mencari baris DB yang paling cocok dengan input line.
-    Menggunakan logika: Input harus DIAWALI oleh Kode DB.
-    """
     input_line = input_line.strip()
     
     for idx, row in db.iterrows():
-        # Dapatkan semua variasi kode untuk baris ini
         code_variants = expand_code_variants(row['KODE'])
         # Sort by length descending agar match yang terpanjang dulu (misal: 'ADS' sebelum 'AD')
         code_variants.sort(key=len, reverse=True)
         
         for code in code_variants:
-            # Cek apakah input diawali kode ini
             if input_line.lower().startswith(code.lower()):
-                # Ambil sisa string sebagai 'Value'
                 remainder = input_line[len(code):].strip()
-                
-                # Cek apakah 'Value' memenuhi kriteria Parameter
                 if check_criteria_match(remainder, row['BATAS NILAI/PARAMETER']):
                     return row, code, remainder
                     
     return None, None, None
 
 def replace_placeholders(text, row_input, matched_code_variant):
-    """
-    Mengganti placeholder dengan nilai, cerdas konteks (OD/OS, dll).
-    """
     if not text: return ""
     processed_text = text
     
@@ -270,7 +280,6 @@ def replace_placeholders(text, row_input, matched_code_variant):
         
     if "[D; S; DS]" in processed_text:
         replacement = ""
-        # Cek dari input juga karena kadang kode tidak memuat sisi (misal Ketok)
         tokens = row_input.upper().split()
         if "DS" in tokens or (matched_code_variant and "DS" in matched_code_variant): replacement = "kanan dan kiri"
         elif "D" in tokens or (matched_code_variant and "D" in matched_code_variant): replacement = "kanan"
@@ -360,15 +369,11 @@ def get_lifestyle_advice(conclusion_text):
 def process_patient_block(block, db):
     lines = [l.strip() for l in block.strip().split('\n') if l.strip()]
     
-    # MODIFIKASI: Hanya butuh 2 baris awal (ID & Nama)
     if len(lines) < 2: 
         return "Error: Data pasien tidak lengkap (Minimal: ID dan Nama)."
     
     p_id = lines[0]
     p_name = lines[1]
-    
-    # MODIFIKASI: Data pemeriksaan dimulai dari baris ke-3 (index 2)
-    # Melewati Umur dan Jenis Kelamin
     exam_lines = lines[2:]
     
     conclusions = []
@@ -378,17 +383,14 @@ def process_patient_block(block, db):
     
     for line in exam_lines:
         line_clean = line.strip()
-        # Case Insensitive Check untuk FWN
         if line_clean.upper() == "FWN":
             work_status = "Saran Kesehatan Kerja: Sehat untuk bekerja dengan catatan"
             continue
-        # Case Insensitive Check untuk Temporary
         if line_clean.lower().startswith("temporary "):
             desc = re.sub(r"^temporary\s+", "", line_clean, flags=re.IGNORECASE)
             work_status = f"Saran Kesehatan Kerja: Tidak sehat untuk bekerja untuk sementara waktu ({desc})\n*Jika sudah melakukan konsultasi dengan dokter spesialis, mendapat tatalaksana dan hasil evaluasi membaik maka Sehat untuk bekerja dengan catatan"
             continue
             
-        # --- NEW MATCHING LOGIC ---
         match_row, matched_code, remainder = find_best_match(line, db)
         
         if match_row is not None:
@@ -406,10 +408,8 @@ def process_patient_block(block, db):
             if final_adv:
                 advices.append(final_adv)
         else:
-            # Tidak ada match -> Tampilkan input mentah
             conclusions.append(line)
 
-    # MODIFIKASI: Penyusunan Output tanpa Umur/Gender
     output_str = f"{p_id}\n{p_name}\n\nKesimpulan:\n"
     for c in conclusions: output_str += f"{c}\n"
     
@@ -420,11 +420,7 @@ def process_patient_block(block, db):
     
     seen_adv = set(final_advices)
     for adv in advices:
-        # MODIFIKASI: Deteksi pemisah " - " untuk multi-saran dalam satu baris DB
-        # Contoh: "Saran A - Saran B" menjadi dua baris.
-        # Kita ganti " - " dengan "\n" sebelum split.
         normalized_adv = adv.replace(" - ", "\n")
-        
         subs = [s.strip().lstrip('-').strip() for s in normalized_adv.split('\n')]
         for sub in subs:
             if sub and sub not in seen_adv:
@@ -440,7 +436,13 @@ def process_patient_block(block, db):
 # 3. MAIN APP
 # ==========================================
 
-st.set_page_config(page_title="Sarkes Generator", layout="wide")
+st.set_page_config(page_title="Sarkes Generator", layout="wide", page_icon="🏥")
+
+# Tambahkan Sidebar Logo
+with st.sidebar:
+    st.header("🏥 RianLab")
+    st.markdown("Sistem Rekap MCU")
+    st.markdown("---")
 
 # Tambahkan CSS custom untuk tombol
 st.markdown("""
@@ -458,7 +460,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Sarkes Generator (Resume MCU)")
+st.title("🏥 Sarkes Generator (Resume MCU)")
 st.markdown("""
 Aplikasi untuk menyusun Resume Hasil Medical Check Up berdasarkan database. <a href="https://docs.google.com/spreadsheets/d/1VVD2VMYPVzjR9HAtJkdykx4dQZsONfSUPQMowXUTpKQ/edit?usp=sharing" target="_blank">Lihat Database</a>
 
