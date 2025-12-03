@@ -119,6 +119,10 @@ USG,USG Abdomen,USG Abd,[text_input],USG Whole Abdomen: [text_input],Konsultasi 
 USG,USG Mammae,USG MM,[text_input],USG Mammae: [text_input],Konsultasi dengan dokter spesialis bedah onkologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil USG Mammae abnormal
 SSBC,SSBC,SSBC,[text_input],SSBC: [text_input],Konsultasi dengan dokter spesialis obsgyn untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil SSBC abnormal
 KONSUL,Konsul Gizi,Konsul Gizi,,,Konsultasi dengan dokter spesialis gizi klinik untuk tata laksana lebih lanjut terkait obesitas
+KONSUL,Konsul Dokter,Konsul sppd,[text_input],,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait [text_input]
+KONSUL,Konsul Dokter,Konsul spog,[text_input],,Konsultasi dengan dokter spesialis obsgyn untuk pemeriksaan dan tata laksana lebih lanjut terkait [text_input]
+KONSUL,Konsul Dokter,Konsul sps,[text_input],,Konsultasi dengan dokter spesialis saraf untuk pemeriksaan dan tata laksana lebih lanjut terkait [text_input]
+KONSUL,Konsul Dokter,Konsul spb,[text_input],,Konsultasi dengan dokter spesialis bedah untuk pemeriksaan dan tata laksana lebih lanjut terkait [text_input]
 ANAMNESIS,Keluhan,Keluhan,[text_input],Keluhan saat ini: [text_input],Konsultasi dengan dokter untuk pemeriksaan dan tata laksana lebih lanjut terkait keluhan saat ini
 """
 
