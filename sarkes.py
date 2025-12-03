@@ -538,28 +538,6 @@ def process_patient_block(block, db):
 
 st.set_page_config(page_title="Sarkes Generator", layout="wide", page_icon="🏥")
 
-# Tambahkan Sidebar Logo
-with st.sidebar:
-    st.header("🏥 dr. Hayyu")
-    st.markdown("Sistem Rekap MCU")
-    st.markdown("---")
-
-# Tambahkan CSS custom untuk tombol
-st.markdown("""
-    <style>
-    div.stButton > button:first-child {
-        background-color: #009b54;
-        color: white;
-        border: none;
-    }
-    div.stButton > button:hover {
-        background-color: #4ed60e;
-        color: white;
-        border: none;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 st.title("🏥 Sarkes Generator (Resume MCU)")
 st.markdown("""
 Aplikasi untuk menyusun Resume Hasil Medical Check Up berdasarkan database. <a href="https://docs.google.com/spreadsheets/d/1VVD2VMYPVzjR9HAtJkdykx4dQZsONfSUPQMowXUTpKQ/edit?usp=sharing" target="_blank">Lihat Database</a>
