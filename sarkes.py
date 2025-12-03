@@ -350,7 +350,15 @@ def replace_placeholders(text, row_input, matched_code_variant):
         return processed_text
 
     # --- Logic 3: Numeric Placeholders ---
-    numbers = re.findall(r"[-+]?\d*\.\d+|\d+", row_input)
+    # Modifikasi: Gunakan sisa string setelah kode dibuang untuk mencari angka
+    # Hal ini mencegah angka di dalam Kode (misal "HbA1c", "HT1") terambil sebagai nilai result
+    search_text = row_input
+    if matched_code_variant:
+        # Hapus kode di awal string (case insensitive)
+        pattern = re.compile(re.escape(matched_code_variant), re.IGNORECASE)
+        search_text = pattern.sub("", row_input, count=1)
+    
+    numbers = re.findall(r"[-+]?\d*\.\d+|\d+", search_text)
     
     if "[XXX/XX]" in processed_text and "/" in row_input:
         match = re.search(r"(\d+/\d+)", row_input)
@@ -534,6 +542,28 @@ def process_patient_block(block, db):
 # ==========================================
 
 st.set_page_config(page_title="Sarkes Generator", layout="wide", page_icon="🏥")
+
+# Tambahkan Sidebar Logo
+with st.sidebar:
+    st.header("🏥 dr. Hayyu")
+    st.markdown("Sistem Rekap MCU")
+    st.markdown("---")
+
+# Tambahkan CSS custom untuk tombol
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        background-color: #009b54;
+        color: white;
+        border: none;
+    }
+    div.stButton > button:hover {
+        background-color: #4ed60e;
+        color: white;
+        border: none;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🏥 Sarkes Generator (Resume MCU)")
 st.markdown("""
