@@ -194,6 +194,8 @@ def check_criteria_match(input_val, criteria):
         return True
         
     # --- LOGIKA BARU UNTUK RDM (GDP & HbA1c) ---
+    # Jika input mengandung "RDM", maka criteria HARUS mengandung "RDM" juga.
+    # Jika input TIDAK mengandung "RDM", maka criteria TIDAK BOLEH mengandung "RDM".
     input_has_rdm = "RDM" in input_val.upper()
     criteria_has_rdm = "RDM" in criteria.upper()
     
@@ -239,27 +241,39 @@ def check_criteria_match(input_val, criteria):
         elif '>' in clean_crit: return val > limit
         elif '<' in clean_crit: return val < limit
     except:
-        pass 
+        pass # Gagal parsing, return False
         
     return False
 
 def find_best_match(input_line, db):
+    """
+    Mencari baris DB yang paling cocok dengan input line.
+    Menggunakan logika: Input harus DIAWALI oleh Kode DB.
+    """
     input_line = input_line.strip()
     
     for idx, row in db.iterrows():
+        # Dapatkan semua variasi kode untuk baris ini
         code_variants = expand_code_variants(row['KODE'])
         # Sort by length descending agar match yang terpanjang dulu (misal: 'ADS' sebelum 'AD')
         code_variants.sort(key=len, reverse=True)
         
         for code in code_variants:
+            # Cek apakah input diawali kode ini
             if input_line.lower().startswith(code.lower()):
+                # Ambil sisa string sebagai 'Value'
                 remainder = input_line[len(code):].strip()
+                
+                # Cek apakah 'Value' memenuhi kriteria Parameter
                 if check_criteria_match(remainder, row['BATAS NILAI/PARAMETER']):
                     return row, code, remainder
                     
     return None, None, None
 
 def replace_placeholders(text, row_input, matched_code_variant):
+    """
+    Mengganti placeholder dengan nilai, cerdas konteks (OD/OS, dll).
+    """
     if not text: return ""
     processed_text = text
     
@@ -280,6 +294,7 @@ def replace_placeholders(text, row_input, matched_code_variant):
         
     if "[D; S; DS]" in processed_text:
         replacement = ""
+        # Cek dari input juga karena kadang kode tidak memuat sisi (misal Ketok)
         tokens = row_input.upper().split()
         if "DS" in tokens or (matched_code_variant and "DS" in matched_code_variant): replacement = "kanan dan kiri"
         elif "D" in tokens or (matched_code_variant and "D" in matched_code_variant): replacement = "kanan"
@@ -369,11 +384,15 @@ def get_lifestyle_advice(conclusion_text):
 def process_patient_block(block, db):
     lines = [l.strip() for l in block.strip().split('\n') if l.strip()]
     
+    # MODIFIKASI: Hanya butuh 2 baris awal (ID & Nama)
     if len(lines) < 2: 
         return "Error: Data pasien tidak lengkap (Minimal: ID dan Nama)."
     
     p_id = lines[0]
     p_name = lines[1]
+    
+    # MODIFIKASI: Data pemeriksaan dimulai dari baris ke-3 (index 2)
+    # Melewati Umur dan Jenis Kelamin
     exam_lines = lines[2:]
     
     conclusions = []
@@ -440,7 +459,7 @@ st.set_page_config(page_title="Sarkes Generator", layout="wide", page_icon="🏥
 
 # Tambahkan Sidebar Logo
 with st.sidebar:
-    st.header("🏥 RianLab")
+    st.header("🏥 dr. Hayyu")
     st.markdown("Sistem Rekap MCU")
     st.markdown("---")
 
