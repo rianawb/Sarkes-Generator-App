@@ -14,12 +14,6 @@ st.set_page_config(
     page_icon="🏥"
 )
 
-# Tambahkan Sidebar Logo
-with st.sidebar:
-    st.header("🏥 dr. Hayyu")
-    st.markdown("Sistem Rekap MCU")
-    st.markdown("---")
-
 # CSS Custom untuk Tombol & Tampilan
 st.markdown("""
     <style>
@@ -335,10 +329,11 @@ def replace_placeholders(text, row_input, matched_code_variant):
                 val = parts[1] if len(parts) > 1 else ""
                 dental_map[code] = val
         
+        # Perubahan: Template output menjadi lowercase untuk detail kondisi
         template_parts = [
-            ('X', 'Gigi Hilang ([X])'), ('R', 'Sisa Akar ([R])'), ('A', 'Abrasi ([A])'),
-            ('C', 'Karies ([C])'), ('E', 'Karang Gigi ([E])'), ('M', 'Perawatan Saluran Akar ([M])'),
-            ('F', 'Tumpatan ([F])'), ('I', 'Impaksi ([I])'), ('P', 'Gigi Palsu ([P])'), ('FR', 'Gigi Patah ([FR])')
+            ('X', 'gigi hilang ([X])'), ('R', 'sisa akar ([R])'), ('A', 'abrasi ([A])'),
+            ('C', 'karies ([C])'), ('E', 'karang gigi ([E])'), ('M', 'perawatan saluran akar ([M])'),
+            ('F', 'tumpatan ([F])'), ('I', 'impaksi ([I])'), ('P', 'gigi palsu ([P])'), ('FR', 'gigi patah ([FR])')
         ]
         active_items = []
         for code, template_phrase in template_parts:
@@ -474,17 +469,17 @@ def process_patient_block(block, db):
     
     conclusions = []
     advices = []
-    work_status = "**Saran Kesehatan Kerja:** Belum diinput"
+    work_status = "Saran Kesehatan Kerja: Belum diinput"
     needs_lifestyle = False
     
     for line in exam_lines:
         line_clean = line.strip()
         if line_clean.upper() == "FWN":
-            work_status = "**Saran Kesehatan Kerja:** Sehat untuk bekerja dengan catatan"
+            work_status = "Saran Kesehatan Kerja: Sehat untuk bekerja dengan catatan"
             continue
         if line_clean.lower().startswith("temporary "):
             desc = re.sub(r"^temporary\s+", "", line_clean, flags=re.IGNORECASE)
-            work_status = f"**Saran Kesehatan Kerja:** Tidak sehat untuk bekerja untuk sementara waktu ({desc})\n*Jika sudah melakukan konsultasi dengan dokter spesialis, mendapat tatalaksana dan hasil evaluasi membaik maka Sehat untuk bekerja dengan catatan"
+            work_status = f"Saran Kesehatan Kerja: Tidak sehat untuk bekerja untuk sementara waktu ({desc})\n*Jika sudah melakukan konsultasi dengan dokter spesialis, mendapat tatalaksana dan hasil evaluasi membaik maka Sehat untuk bekerja dengan catatan"
             continue
             
         # Check for Multi Visus case first
@@ -515,10 +510,10 @@ def process_patient_block(block, db):
         else:
             conclusions.append(line)
 
-    output_str = f"{p_id}\n{p_name}\n\n**Kesimpulan:**\n"
+    output_str = f"{p_id}\n{p_name}\n\nKesimpulan:\n"
     for c in conclusions: output_str += f"{c}\n"
     
-    output_str += "\n**Saran:**\n"
+    output_str += "\nSaran:\n"
     final_advices = []
     if needs_lifestyle:
         final_advices.extend(["Jaga pola hidup sehat", "Olahraga secara teratur 3-5x/minggu, minimal 30 menit"])
