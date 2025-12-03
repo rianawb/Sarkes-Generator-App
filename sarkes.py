@@ -482,6 +482,9 @@ if st.button("Proses Sarkes"):
         results = [process_patient_block(b, db) for b in raw_blocks if b.strip()]
         st.subheader("Hasil Resume (Sarkes)")
         st.text_area("Output", value="\n\n".join(results), height=400)
+        
+        # Add the code block for copy all functionality
+        st.code("\n\n".join(results), language="markdown")
 
 # Footer
 st.markdown("---")
