@@ -80,7 +80,7 @@ LAB,Hematologi,ANM,"HB <12.0, MCV <=80.0,  MCH <=26.0","Anemia mikrositik hipokr
 LAB,Hematologi,Eritro,>5.9,Eritrositosis [X.X] x 10^6/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait eritrositosis
 LAB,Hematologi,LKS,>=12.0,Leukositosis [XX.X] x 10^3/uL --> suspek infeksi bakteri,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukositosis
 LAB,Hematologi,LKT,10.0-11.9,Peningkatan leukosit [XX.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait peningkatan leukosit
-LAB,Hematologi,LKP,<4.0,Leukopenia [X.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukositosis
+LAB,Hematologi,LKP,<4.0,Leukopenia [X.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukopenia
 LAB,Hematologi,Eos,>4.0,Eosinofilia [X.X] %,Hindari faktor pencetus alergi
 LAB,Hematologi,LED,>15,Peningkatan LED [XX] mm/jam,Jaga stamina tubuh Anda
 LAB,Hematologi,Fraksi HB,Ditemukan,Ditemukan fraksi hemoglobin varian,Lakukan pemeriksaan analisa hemoglobin
@@ -474,17 +474,17 @@ def process_patient_block(block, db):
     
     conclusions = []
     advices = []
-    work_status = "**Saran Kesehatan Kerja:** Belum diinput"
+    work_status = "Saran Kesehatan Kerja: Belum diinput"
     needs_lifestyle = False
     
     for line in exam_lines:
         line_clean = line.strip()
         if line_clean.upper() == "FWN":
-            work_status = "**Saran Kesehatan Kerja:** Sehat untuk bekerja dengan catatan"
+            work_status = "Saran Kesehatan Kerja: Sehat untuk bekerja dengan catatan"
             continue
         if line_clean.lower().startswith("temporary "):
             desc = re.sub(r"^temporary\s+", "", line_clean, flags=re.IGNORECASE)
-            work_status = f"**Saran Kesehatan Kerja:** Tidak sehat untuk bekerja untuk sementara waktu ({desc})\n*Jika sudah melakukan konsultasi dengan dokter spesialis, mendapat tatalaksana dan hasil evaluasi membaik maka Sehat untuk bekerja dengan catatan"
+            work_status = f"Saran Kesehatan Kerja: Tidak sehat untuk bekerja untuk sementara waktu ({desc})\n*Jika sudah melakukan konsultasi dengan dokter spesialis, mendapat tatalaksana dan hasil evaluasi membaik maka Sehat untuk bekerja dengan catatan"
             continue
             
         # Check for Multi Visus case first
@@ -515,10 +515,10 @@ def process_patient_block(block, db):
         else:
             conclusions.append(line)
 
-    output_str = f"{p_id}\n{p_name}\n\n**Kesimpulan:**\n"
+    output_str = f"{p_id}\n{p_name}\n\nKesimpulan:\n"
     for c in conclusions: output_str += f"{c}\n"
     
-    output_str += "\n**Saran:**\n"
+    output_str += "\nSaran:\n"
     final_advices = []
     if needs_lifestyle:
         final_advices.extend(["Jaga pola hidup sehat", "Olahraga secara teratur 3-5x/minggu, minimal 30 menit"])
