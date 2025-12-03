@@ -11,21 +11,21 @@ FISIK,Nadi,Taki,>100,Takikardia (nadi [XXX] kali/menit),Lakukan pemeriksaan EKG 
 FISIK,Nadi,Bradi,<60,Bradikardia (nadi [XX] kali/menit),"Lakukan pemeriksaan EKG dan konsultasi dengan dokter spesialis jantung jika ada keluhan berdebar-debar, pingsan atau nyeri dada"
 FISIK,Tekanan Darah,PreHT,120-139/80-89,Prehipertensi (tekanan darah [XXX/XX] mmHg),Monitor tekanan darah secara berkala
 FISIK,Tekanan Darah,HT1,140-159/90-100,Hipertensi stage 1 (tekanan darah [XXX/XX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala
-FISIK,Tekanan Darah,HT2,>=160/>=100,Hipertensi stage 2 (tekanan darah [XXX/XXX] mmHg),
-FISIK,Tekanan Darah,RHT TK,>=140/>=90,Riwayat hipertensi tidak terkontrol (tekanan darah saat ini [XXX/XX] mmHg),
-FISIK,Tekanan Darah,RHT Kontrol,<=140/<=90,Riwayat hipertensi terkontrol (tekanan darah saat ini [XXX/XX] mmHg),
+FISIK,Tekanan Darah,HT2,>=160/>=100,Hipertensi stage 2 (tekanan darah [XXX/XXX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala
+FISIK,Tekanan Darah,RHT TK,>=140/>=90,Riwayat hipertensi tidak terkontrol (tekanan darah saat ini [XXX/XX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala
+FISIK,Tekanan Darah,RHT Kontrol,<=140/<=90,Riwayat hipertensi terkontrol (tekanan darah saat ini [XXX/XX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala
 FISIK,Indeks Massa Tubuh,Sentral,">=25.0, LP >=80","Obesitas sentral (IMT [XX.X] kg/m2, lingkar perut [YY] cm)",Turunkan BB hingga BB ideal
-FISIK,Indeks Massa Tubuh,Obes,>=25.0,Obesitas (IMT [XX.X] kg/m2),
-FISIK,Indeks Massa Tubuh,Over,23.0-24.9,Overweight (IMT [XX.X] kg/m2),Tingkatkan BB hingga BB ideal
+FISIK,Indeks Massa Tubuh,Obes,>=25.0,Obesitas (IMT [XX.X] kg/m2),Turunkan BB hingga BB ideal
+FISIK,Indeks Massa Tubuh,Over,23.0-24.9,Overweight (IMT [XX.X] kg/m2),Turunkan BB hingga BB ideal
 FISIK,Indeks Massa Tubuh,Under,<18.5,Underweight (IMT [XX.X] kg/m2),"Tingkatkan asupan protein dan olahraga secara teratur (3-5x/minggu, minimal 30 menit) untuk meningkatkan massa otot"
 FISIK,Visus,[OD; OS; ODS] Miop,TKM,"[OD; OS; ODS] Miopia, tanpa kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
-FISIK,Visus,[OD; OS; ODS] Miop,DKM,"[OD; OS; ODS] Miopia, belum terkoreksi optimal dengan kacamata",
+FISIK,Visus,[OD; OS; ODS] Miop,DKM,"[OD; OS; ODS] Miopia, belum terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
 FISIK,Visus,[OD; OS; ODS] Miop,Koreksi,"[OD; OS; ODS] Miopia, terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata jika ada keluhan penurunan penglihatan dengan kacamata yang sudah ada
 FISIK,Visus,[OD; OS; ODS] Hiper,TKM,"[OD; OS; ODS] Hipermetropia, tanpa kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
-FISIK,Visus,[OD; OS; ODS] Hiper,DKM,"[OD; OS; ODS] Hipermetropia, belum terkoreksi optimal dengan kacamata",
+FISIK,Visus,[OD; OS; ODS] Hiper,DKM,"[OD; OS; ODS] Hipermetropia, belum terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
 FISIK,Visus,[OD; OS; ODS] Hiper,Koreksi,"[OD; OS; ODS] Hipermetropia, terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata jika ada keluhan penurunan penglihatan dengan kacamata yang sudah ada
 FISIK,Visus,[OD; OS; ODS] Pres,TKM,"[OD; OS; ODS] Presbiopia, tanpa kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
-FISIK,Visus,[OD; OS; ODS] Pres,DKM,"[OD; OS; ODS] Presbiopia, belum terkoreksi optimal dengan kacamata",
+FISIK,Visus,[OD; OS; ODS] Pres,DKM,"[OD; OS; ODS] Presbiopia, belum terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
 FISIK,Visus,[OD; OS; ODS] Pres,Koreksi,"[OD; OS; ODS] Presbiopia, terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata jika ada keluhan penurunan penglihatan dengan kacamata yang sudah ada
 FISIK,Pterigium,[OD; OS; ODS] PTR,Grade 1-3,Pterigium grade [G] di [OD; OS; ODS] ,"Gunakan pelindung mata/kacamata hitam saat beraktivitas di luar ruangan untuk menghindari paparan debu, angin dan sinar matahari"
 FISIK,Buta Warna,BW,Parsial,Buta warna parsial,Dapat ditempatkan pada pekerjaan yang tidak membutuhkan ketelitian warna
