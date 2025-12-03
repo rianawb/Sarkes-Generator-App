@@ -14,6 +14,12 @@ st.set_page_config(
     page_icon="🏥"
 )
 
+# Tambahkan Sidebar Logo
+with st.sidebar:
+    st.header("🏥 dr. Hayyu")
+    st.markdown("Sistem Rekap MCU")
+    st.markdown("---")
+
 # CSS Custom untuk Tombol & Tampilan
 st.markdown("""
     <style>
@@ -301,6 +307,11 @@ def replace_placeholders(text, row_input, matched_code_variant):
         elif "S" in tokens or (matched_code_variant and "S" in matched_code_variant): replacement = "kiri"
         processed_text = processed_text.replace("[D; S; DS]", replacement)
 
+    # --- Logic: Astigmatisme Check ---
+    # Jika input mengandung kata "astig" (case-insensitive), tambahkan "Astigmatisme" di belakang diagnosa.
+    if "astig" in row_input.lower():
+        processed_text = re.sub(r"\b(Miopia|Hipermetropia|Presbiopia)\b", r"\1 Astigmatisme", processed_text, flags=re.IGNORECASE)
+
     # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
     if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
         clean_input = re.sub(r"^(Leukosituria|Hematuria)\s*", "", row_input, flags=re.IGNORECASE).strip()
@@ -399,7 +410,10 @@ def handle_multi_visus(line, db):
         
         for side, cond in visus_matches:
             # Bikin input sintetis: "OS Miop TKM"
+            # Sertakan "astig" jika ada di input asli agar logic di replace_placeholders jalan
             synthetic_input = f"{side} {cond} {param}"
+            if "astig" in line.lower():
+                synthetic_input += " astig"
             
             # Cari match di DB
             match_row, matched_code, remainder = find_best_match(synthetic_input, db)
@@ -520,28 +534,6 @@ def process_patient_block(block, db):
 # ==========================================
 
 st.set_page_config(page_title="Sarkes Generator", layout="wide", page_icon="🏥")
-
-# Tambahkan Sidebar Logo
-with st.sidebar:
-    st.header("🏥 dr. Hayyu")
-    st.markdown("Sistem Rekap MCU")
-    st.markdown("---")
-
-# Tambahkan CSS custom untuk tombol
-st.markdown("""
-    <style>
-    div.stButton > button:first-child {
-        background-color: #009b54;
-        color: white;
-        border: none;
-    }
-    div.stButton > button:hover {
-        background-color: #4ed60e;
-        color: white;
-        border: none;
-    }
-    </style>
-""", unsafe_allow_html=True)
 
 st.title("🏥 Sarkes Generator (Resume MCU)")
 st.markdown("""
