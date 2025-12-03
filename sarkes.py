@@ -381,6 +381,61 @@ def get_lifestyle_advice(conclusion_text):
     con_lower = conclusion_text.lower()
     return any(k in con_lower for k in keywords)
 
+def handle_multi_visus(line, db):
+    # Cek apakah ini baris Visus ganda
+    # Cari semua pasangan Kode Visus (misal: OS Miop, ODS Pres)
+    visus_matches = re.findall(r"\b(OD|OS|ODS)\s+(Miop|Hiper|Pres)\b", line, re.IGNORECASE)
+    
+    # Cari parameter (TKM/DKM/Koreksi)
+    param_match = re.search(r"\b(TKM|DKM|Koreksi)\b", line, re.IGNORECASE)
+    
+    # Syarat: Minimal 2 kode visus DAN 1 parameter ditemukan
+    if len(visus_matches) >= 2 and param_match:
+        param = param_match.group(0)
+        
+        parts_conclusions = []
+        collected_advices = []
+        suffix = ""
+        
+        for side, cond in visus_matches:
+            # Bikin input sintetis: "OS Miop TKM"
+            synthetic_input = f"{side} {cond} {param}"
+            
+            # Cari match di DB
+            match_row, matched_code, remainder = find_best_match(synthetic_input, db)
+            
+            if match_row is not None:
+                # Proses Kesimpulan
+                raw_conc = str(match_row['KESIMPULAN'])
+                final_conc = replace_placeholders(raw_conc, synthetic_input, matched_code)
+                
+                # Split untuk ambil bagian depan (diagnosis) dan belakang (status kacamata)
+                # Asumsi format: "Mata kiri Miopia, tanpa kacamata"
+                if "," in final_conc:
+                    parts = final_conc.split(",", 1)
+                    core = parts[0].strip()
+                    suffix = parts[1].strip() # Akan overwrite, tapi harusnya sama
+                    parts_conclusions.append(core)
+                else:
+                    parts_conclusions.append(final_conc)
+                
+                # Proses Saran
+                raw_adv = str(match_row['SARAN KHUSUS'])
+                final_adv = replace_placeholders(raw_adv, synthetic_input, matched_code)
+                if final_adv:
+                    collected_advices.append(final_adv)
+        
+        # Gabungkan Kesimpulan
+        if parts_conclusions:
+            if suffix:
+                merged_conclusion = ", ".join(parts_conclusions) + ", " + suffix
+            else:
+                merged_conclusion = ", ".join(parts_conclusions)
+            
+            return merged_conclusion, collected_advices
+            
+    return None, None
+
 def process_patient_block(block, db):
     lines = [l.strip() for l in block.strip().split('\n') if l.strip()]
     
@@ -410,6 +465,15 @@ def process_patient_block(block, db):
             work_status = f"Saran Kesehatan Kerja: Tidak sehat untuk bekerja untuk sementara waktu ({desc})\n*Jika sudah melakukan konsultasi dengan dokter spesialis, mendapat tatalaksana dan hasil evaluasi membaik maka Sehat untuk bekerja dengan catatan"
             continue
             
+        # Check for Multi Visus case first
+        multi_conc, multi_adv = handle_multi_visus(line, db)
+        if multi_conc:
+            conclusions.append(multi_conc)
+            if multi_adv:
+                advices.extend(multi_adv)
+            continue
+
+        # Normal matching
         match_row, matched_code, remainder = find_best_match(line, db)
         
         if match_row is not None:
