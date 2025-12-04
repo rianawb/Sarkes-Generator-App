@@ -14,12 +14,6 @@ st.set_page_config(
     page_icon="🏥"
 )
 
-# Tambahkan Sidebar Logo
-with st.sidebar:
-    st.header("🏥 dr. Hayyu")
-    st.markdown("Sistem Rekap MCU")
-    st.markdown("---")
-
 # CSS Custom untuk Tombol & Tampilan
 st.markdown("""
     <style>
@@ -80,7 +74,7 @@ LAB,Hematologi,ANM,"HB <12.0, MCV <=80.0,  MCH <=26.0","Anemia mikrositik hipokr
 LAB,Hematologi,Eritro,>5.0,Eritrositosis [X.X] x 10^6/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait eritrositosis
 LAB,Hematologi,LKS,>=12.0,Leukositosis [XX.X] x 10^3/uL --> suspek infeksi bakteri,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukositosis
 LAB,Hematologi,LKT,10.0-11.9,Peningkatan leukosit [XX.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait peningkatan leukosit
-LAB,Hematologi,LKP,<4.0,Leukopenia [X.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukositosis
+LAB,Hematologi,LKP,<4.0,Leukopenia [X.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukopenia
 LAB,Hematologi,Eos,>4.0,Eosinofilia [X.X] %,Hindari faktor pencetus alergi
 LAB,Hematologi,LED,>15,Peningkatan LED [XX] mm/jam,Jaga stamina tubuh Anda
 LAB,Hematologi,Fraksi HB,Ditemukan,Ditemukan fraksi hemoglobin varian,Lakukan pemeriksaan analisa hemoglobin
@@ -313,6 +307,7 @@ def replace_placeholders(text, row_input, matched_code_variant):
         processed_text = re.sub(r"\b(Miopia|Hipermetropia|Presbiopia)\b", r"\1 Astigmatisme", processed_text, flags=re.IGNORECASE)
 
     # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
+    # Perluasan deteksi karena kode telah dipersingkat (LE, hema)
     if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
         # Use matched_code_variant to strip the code from input
         clean_input = row_input
