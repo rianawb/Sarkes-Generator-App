@@ -14,6 +14,12 @@ st.set_page_config(
     page_icon="🏥"
 )
 
+# Tambahkan Sidebar Logo
+with st.sidebar:
+    st.header("🏥 dr. Hayyu")
+    st.markdown("Sistem Rekap MCU")
+    st.markdown("---")
+
 # CSS Custom untuk Tombol & Tampilan
 st.markdown("""
     <style>
@@ -41,7 +47,7 @@ FISIK,Tekanan Darah,RHT Kontrol,<=140/<=90,Riwayat hipertensi terkontrol (tekana
 FISIK,Indeks Massa Tubuh,Sentral,">=25.0, LP >=80","Obesitas sentral (IMT [XX.X] kg/m2, lingkar perut [YY] cm)",Turunkan BB hingga BB ideal
 FISIK,Indeks Massa Tubuh,Obes,>=25.0,Obesitas (IMT [XX.X] kg/m2),Turunkan BB hingga BB ideal
 FISIK,Indeks Massa Tubuh,Over,23.0-24.9,Overweight (IMT [XX.X] kg/m2),Turunkan BB hingga BB ideal
-FISIK,Indeks Massa Tubuh,Under,<18.5,Underweight (IMT [XX.X] kg/m2),"Tingkatkan asupan protein dan olahraga secara teratur (3-5x/minggu, minimal 30 menit) untuk meningkatkan massa otot"
+FISIK,Indeks Massa Tubuh,Under,<18.5,Underweight (IMT [XX.X] kg/m2),"Tingkatkan BB hingga BB ideal - Tingkatkan asupan protein dan olahraga secara teratur (3-5x/minggu, minimal 30 menit) untuk meningkatkan massa otot"
 FISIK,Visus,[OD; OS; ODS] Miop,TKM,"[OD; OS; ODS] Miopia, tanpa kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
 FISIK,Visus,[OD; OS; ODS] Miop,DKM,"[OD; OS; ODS] Miopia, belum terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
 FISIK,Visus,[OD; OS; ODS] Miop,Koreksi,"[OD; OS; ODS] Miopia, terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata jika ada keluhan penurunan penglihatan dengan kacamata yang sudah ada
@@ -71,7 +77,7 @@ FISIK,Gigi,Gigi,Jumlah 1-32,"Gigi: Gigi Hilang ([X]), Sisa Akar ([R]), Abrasi ([
 LAB,Hematologi,Poli,HB >16.0,Suspek polisithemia (Hemoglobin [XX.X] g/dL),Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait suspek polisitemia
 LAB,Hematologi,ANN,HB  <12.0,Anemia normositik normokromik (Hemoglobin [XX.X] g/dL),"Tingkatkan asupan makanan yang mengandung zat besi (sayuran hijau, daging merah, hati), hindari teh dan kopi - Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait anemia"
 LAB,Hematologi,ANM,"HB <12.0, MCV <=80.0,  MCH <=26.0","Anemia mikrositik hipokromik (Hemoglobin [XX.X] g/dL, MCV [YY.Y] fL, MCH [ZZ.Z] pg)","Tingkatkan asupan makanan yang mengandung zat besi (sayuran hijau, daging merah, hati), hindari teh dan kopi - Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait anemia"
-LAB,Hematologi,Eritro,>5.9,Eritrositosis [X.X] x 10^6/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait eritrositosis
+LAB,Hematologi,Eritro,>5.0,Eritrositosis [X.X] x 10^6/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait eritrositosis
 LAB,Hematologi,LKS,>=12.0,Leukositosis [XX.X] x 10^3/uL --> suspek infeksi bakteri,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukositosis
 LAB,Hematologi,LKT,10.0-11.9,Peningkatan leukosit [XX.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait peningkatan leukosit
 LAB,Hematologi,LKP,<4.0,Leukopenia [X.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukositosis
@@ -537,6 +543,28 @@ def process_patient_block(block, db):
 # ==========================================
 
 st.set_page_config(page_title="Sarkes Generator", layout="wide", page_icon="🏥")
+
+# Tambahkan Sidebar Logo
+with st.sidebar:
+    st.header("🏥 dr. Hayyu")
+    st.markdown("Sistem Rekap MCU")
+    st.markdown("---")
+
+# Tambahkan CSS custom untuk tombol
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        background-color: #009b54;
+        color: white;
+        border: none;
+    }
+    div.stButton > button:hover {
+        background-color: #4ed60e;
+        color: white;
+        border: none;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🏥 Sarkes Generator (Resume MCU)")
 st.markdown("""
