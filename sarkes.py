@@ -47,7 +47,7 @@ FISIK,Tekanan Darah,RHT Kontrol,<=140/<=90,Riwayat hipertensi terkontrol (tekana
 FISIK,Indeks Massa Tubuh,Sentral,">=25.0, LP >=80","Obesitas sentral (IMT [XX.X] kg/m2, lingkar perut [YY] cm)",Turunkan BB hingga BB ideal
 FISIK,Indeks Massa Tubuh,Obes,>=25.0,Obesitas (IMT [XX.X] kg/m2),Turunkan BB hingga BB ideal
 FISIK,Indeks Massa Tubuh,Over,23.0-24.9,Overweight (IMT [XX.X] kg/m2),Turunkan BB hingga BB ideal
-FISIK,Indeks Massa Tubuh,Under,<18.5,Underweight (IMT [XX.X] kg/m2),"Tingkatkan BB hingga BB ideal - Tingkatkan asupan protein dan olahraga secara teratur (3-5x/minggu, minimal 30 menit) untuk meningkatkan massa otot"
+FISIK,Indeks Massa Tubuh,Under,<18.5,Underweight (IMT [XX.X] kg/m2),"Tingkatkan asupan protein dan olahraga secara teratur (3-5x/minggu, minimal 30 menit) untuk meningkatkan massa otot"
 FISIK,Visus,[OD; OS; ODS] Miop,TKM,"[OD; OS; ODS] Miopia, tanpa kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
 FISIK,Visus,[OD; OS; ODS] Miop,DKM,"[OD; OS; ODS] Miopia, belum terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai
 FISIK,Visus,[OD; OS; ODS] Miop,Koreksi,"[OD; OS; ODS] Miopia, terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata jika ada keluhan penurunan penglihatan dengan kacamata yang sudah ada
@@ -118,17 +118,17 @@ LAB,Faal hati,AntiHBs,NR,Belum terbentuk antibodi/kekebalan terhadap virus Hepat
 LAB,Faal hati,AntiHBs,Reaktif,Sudah terbentuk antibodi/kekebalan terhadap virus Hepatitis B,
 LAB,Mikronutrien,Vit D,<20.0,Defisiensi vitamin D (Vitamin D 25-OH Total [XX.X] ng/mL),"Tingkatkan paparan sinar matahari pagi selama ±5–15 menit setiap hari, terutama pada area tangan dan kaki. Perbanyak konsumsi makanan kaya vitamin D (ikan laut, telur, susu, keju), serta pertimbangkan suplementasi vitamin D sesuai anjuran dokter"
 LAB,Mikronutrien,Vit D,>=20.0-29.9,Insufisiensi vitamin D (Vitamin D 25-OH Total [XX.X] ng/mL),"Tingkatkan paparan sinar matahari pagi selama ±5–15 menit setiap hari, terutama pada area tangan dan kaki. Perbanyak konsumsi makanan kaya vitamin D (ikan laut, telur, susu, keju), serta pertimbangkan suplementasi vitamin D sesuai anjuran dokter"
-LAB,Urinalisa,Albuminuria,[text_input],Albuminuria [text_input] mg/dL,Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
-LAB,Urinalisa,Ketonuria,[text_input],Ketonuria [text_input] mg/dL,Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
-LAB,Urinalisa,Leukosituria,[text_input],"Leukosituria [text_input]/uL, sedimen leukosit [text_input]/LPB",Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
+LAB,Urinalisa,Alb,[text_input],Albuminuria [text_input] mg/dL,Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
+LAB,Urinalisa,keton,[text_input],Ketonuria [text_input] mg/dL,Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
+LAB,Urinalisa,LE,[text_input],"Leukosituria [text_input]/uL, sedimen leukosit [text_input]/LPB",Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
 LAB,Urinalisa,Glukosuria,[text_input],Glukosuria [text_input] mg/dL,Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
-LAB,Urinalisa,Hematuria,[text_input],"Hematuria [text_input]/uL, sedimen eritrosit [text_input]/LPB",Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
-LAB,Urinalisa,Kristaluria,,Kristaluria normal amorf urat (+)/LPB,Minum air putih minimal 2L/hari
-LAB,Urinalisa,Urobilinogen,[text_input],Urobilinogenuria [text_input] mg/dL,Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
+LAB,Urinalisa,hema,[text_input],"Hematuria [text_input]/uL, sedimen eritrosit [text_input]/LPB",Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
+LAB,Urinalisa,Kristal,,Kristaluria normal amorf urat (+)/LPB,Minum air putih minimal 2L/hari
+LAB,Urinalisa,urob,[text_input],Urobilinogenuria [text_input] mg/dL,Konsultasi dengan dokter spesialis urologi untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil urinalisa abnormal
 LAB,Urinalisa,Silinder kasar,[text_input],Silinder berbutir kasar [text_input]/LPK,Minum air putih minimal 2L/hari
 LAB,Urinalisa,Silinder halus,[text_input],Silinder berbutir halus [text_input]/LPK,Minum air putih minimal 2L/hari
 LAB,Urinalisa,Epitel,[text_input],Epitel skuamosa [text_input]/LPK,Minum air putih minimal 2L/hari
-LAB,Urinalisa,Bakteriuria,,Bakteriuria (+)/LPB,Hindari kebiasaan menahan BAK dan jaga higienitas area genitalia
+LAB,Urinalisa,Bakteri,,Bakteriuria (+)/LPB,Hindari kebiasaan menahan BAK dan jaga higienitas area genitalia
 LAB,Feses,FS Parasit,Parasit,Ditemukan parasit blastocystis hominis (+) pada feses,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil analisa feses abnormal
 LAB,Feses,FS Leuko,Leuko,Ditemukan leukosit 0-1/LPB pada feses,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil analisa feses abnormal
 LAB,Feses,FS Eri,Eri,Ditemukan eritrosit 0-1/LPB pada feses,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait hasil analisa feses abnormal
@@ -314,7 +314,12 @@ def replace_placeholders(text, row_input, matched_code_variant):
 
     # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
     if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
-        clean_input = re.sub(r"^(Leukosituria|Hematuria)\s*", "", row_input, flags=re.IGNORECASE).strip()
+        # Use matched_code_variant to strip the code from input
+        clean_input = row_input
+        if matched_code_variant:
+             pattern = re.compile(re.escape(matched_code_variant), re.IGNORECASE)
+             clean_input = pattern.sub("", row_input, count=1).strip()
+
         match = re.search(r"^(.*?)(?:,?\s*sedimen\s*)(.*)$", clean_input, re.IGNORECASE)
         if match:
             val1 = match.group(1).strip()
@@ -543,28 +548,6 @@ def process_patient_block(block, db):
 # ==========================================
 
 st.set_page_config(page_title="Sarkes Generator", layout="wide", page_icon="🏥")
-
-# Tambahkan Sidebar Logo
-with st.sidebar:
-    st.header("🏥 dr. Hayyu")
-    st.markdown("Sistem Rekap MCU")
-    st.markdown("---")
-
-# Tambahkan CSS custom untuk tombol
-st.markdown("""
-    <style>
-    div.stButton > button:first-child {
-        background-color: #009b54;
-        color: white;
-        border: none;
-    }
-    div.stButton > button:hover {
-        background-color: #4ed60e;
-        color: white;
-        border: none;
-    }
-    </style>
-""", unsafe_allow_html=True)
 
 st.title("🏥 Sarkes Generator (Resume MCU)")
 st.markdown("""
