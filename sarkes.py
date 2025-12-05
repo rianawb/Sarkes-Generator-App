@@ -54,7 +54,7 @@ FISIK,Visus,[OD; OS; ODS] Pres,Koreksi,"[OD; OS; ODS] Presbiopia, terkoreksi opt
 FISIK,Pterigium,[OD; OS; ODS] PTR,Grade 1-3,Pterigium grade [G] di [OD; OS; ODS] ,"Gunakan pelindung mata/kacamata hitam saat beraktivitas di luar ruangan untuk menghindari paparan debu, angin dan sinar matahari"
 FISIK,Buta Warna,BW,Parsial,Buta warna parsial,Dapat ditempatkan pada pekerjaan yang tidak membutuhkan ketelitian warna
 FISIK,Telinga,Serumen [AD; AS; ADS],,Serumen di [AD; AS; ADS],Konsultasi dengan dokter spesialis THT untuk pembersihan/evakuasi serumen di [AD; AS; ADS]
-FISIK,Telinga,Prop [AD; AS; ADS],,Serumen prop di [AD; AS; ADS],
+FISIK,Telinga,Prop [AD; AS; ADS],,Serumen prop di [AD; AS; ADS],Konsultasi dengan dokter spesialis THT untuk pembersihan/evakuasi serumen di [AD; AS; ADS]
 FISIK,Telinga,HL [AD; AS; ADS],,Kesan penurunan pendengaran di [AD; AS; ADS],Lakukan pemeriksaan audiometri dan konsultasi dengan dokter spesialis THT untuk pemeriksaan dan tata laksana lebih lanjut terkait kesan penurunan pendengaran di [AD; AS; ADS]
 FISIK,Tonsil,Tonsil,Ukuran T2/T2; T3/T3; T4/T4,Hipertrofi tonsil [TT/TT],Konsultasi dengan dokter spesialis THT untuk pemeriksaan dan tata laksana lebih lanjut terkait pembesaran/hipertrofi tonsil
 FISIK,Faring,Faring,Hiperemis,Faring hiperemis,Konsultasi dengan dokter spesialis THT untuk pemeriksaan dan tata laksana lebih lanjut terkait temuan faringitis
@@ -308,14 +308,8 @@ def replace_placeholders(text, row_input, matched_code_variant):
         processed_text = re.sub(r"\b(Miopia|Hipermetropia|Presbiopia)\b", r"\1 Astigmatisme", processed_text, flags=re.IGNORECASE)
 
     # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
-    # Perluasan deteksi karena kode telah dipersingkat (LE, hema)
     if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
-        # Use matched_code_variant to strip the code from input
-        clean_input = row_input
-        if matched_code_variant:
-             pattern = re.compile(re.escape(matched_code_variant), re.IGNORECASE)
-             clean_input = pattern.sub("", row_input, count=1).strip()
-
+        clean_input = re.sub(r"^(Leukosituria|Hematuria)\s*", "", row_input, flags=re.IGNORECASE).strip()
         match = re.search(r"^(.*?)(?:,?\s*sedimen\s*)(.*)$", clean_input, re.IGNORECASE)
         if match:
             val1 = match.group(1).strip()
@@ -544,6 +538,28 @@ def process_patient_block(block, db):
 # ==========================================
 
 st.set_page_config(page_title="Sarkes Generator", layout="wide", page_icon="🏥")
+
+# Tambahkan Sidebar Logo
+with st.sidebar:
+    st.header("🏥 dr. Hayyu")
+    st.markdown("Sistem Rekap MCU")
+    st.markdown("---")
+
+# Tambahkan CSS custom untuk tombol
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        background-color: #009b54;
+        color: white;
+        border: none;
+    }
+    div.stButton > button:hover {
+        background-color: #4ed60e;
+        color: white;
+        border: none;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🏥 Sarkes Generator (Resume MCU)")
 st.markdown("""
