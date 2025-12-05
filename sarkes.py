@@ -14,6 +14,8 @@ st.set_page_config(
     page_icon="🏥"
 )
 
+# HAPUS BAGIAN SIDEBAR DI SINI (CLEAN)
+
 # CSS Custom untuk Tombol & Tampilan
 st.markdown("""
     <style>
@@ -308,8 +310,17 @@ def replace_placeholders(text, row_input, matched_code_variant):
         processed_text = re.sub(r"\b(Miopia|Hipermetropia|Presbiopia)\b", r"\1 Astigmatisme", processed_text, flags=re.IGNORECASE)
 
     # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
-    if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
-        clean_input = re.sub(r"^(Leukosituria|Hematuria)\s*", "", row_input, flags=re.IGNORECASE).strip()
+    # Perluasan deteksi karena kode telah dipersingkat (LE, hema)
+    # Gunakan regex untuk mencari kata kunci LE atau hema di awal input secara case-insensitive
+    is_leuko = re.match(r"^LE\b", row_input, re.IGNORECASE)
+    is_hema = re.match(r"^hema\b", row_input, re.IGNORECASE)
+    
+    if (is_leuko or is_hema) and text.count("[text_input]") >= 2:
+        clean_input = row_input
+        if matched_code_variant:
+             pattern = re.compile(re.escape(matched_code_variant), re.IGNORECASE)
+             clean_input = pattern.sub("", row_input, count=1).strip()
+
         match = re.search(r"^(.*?)(?:,?\s*sedimen\s*)(.*)$", clean_input, re.IGNORECASE)
         if match:
             val1 = match.group(1).strip()
