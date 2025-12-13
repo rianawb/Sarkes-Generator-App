@@ -14,8 +14,6 @@ st.set_page_config(
     page_icon="🏥"
 )
 
-# HAPUS BAGIAN SIDEBAR DI SINI (CLEAN)
-
 # CSS Custom untuk Tombol & Tampilan
 st.markdown("""
     <style>
@@ -316,6 +314,7 @@ def replace_placeholders(text, row_input, matched_code_variant):
     is_hema = re.match(r"^hema\b", row_input, re.IGNORECASE)
     
     if (is_leuko or is_hema) and text.count("[text_input]") >= 2:
+        # Use matched_code_variant to strip the code from input
         clean_input = row_input
         if matched_code_variant:
              pattern = re.compile(re.escape(matched_code_variant), re.IGNORECASE)
