@@ -108,7 +108,7 @@ LAB,Faal hati,GGH GOT,>=54,Suspek gangguan fungsi hati (GOT [XX] U/L),Konsultasi
 LAB,Faal hati,GGH GPT,>=68,Suspek gangguan fungsi hati (GOT [XX] U/L),Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait suspek gangguan fungsi hati
 LAB,Faal hati,GGH ALL,GOT >=54 & GPT>=68,"Suspek gangguan fungsi hati (GOT [XX] U/L, GPT [YY] U/L)",Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait suspek gangguan fungsi hati
 LAB,Faal hati,HBsAg,Reaktif,HBsAg Reaktif,"Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait temuan HBsAg reaktif - Lakukan pemeriksaan imunologi/serologi untuk menentukan status infeksi Hepatitis B"
-LAB,Faal hati,AntiHBs,NR,Belum terbentuk antibodi/kekebalan terhadap virus Hepatitis B,Vaksinasi Hepatitis B untuk memberikan kekebalan terhadap virus Hepatitis B
+LAB,Faal hati,AntiHBs,NR,Belum pernah terpapar dan belum memiliki kekebalan/antibodi terhadap virus Hepatitis B,Vaksinasi Hepatitis B untuk memberikan kekebalan terhadap virus Hepatitis B
 LAB,Faal hati,AntiHBs,Reaktif,Sudah terbentuk antibodi/kekebalan terhadap virus Hepatitis B,
 LAB,Mikronutrien,Vit D,<20.0,Defisiensi vitamin D (Vitamin D 25-OH Total [XX.X] ng/mL),"Tingkatkan paparan sinar matahari pagi selama ±5–15 menit setiap hari, terutama pada area tangan dan kaki. Perbanyak konsumsi makanan kaya vitamin D (ikan laut, telur, susu, keju), serta pertimbangkan suplementasi vitamin D sesuai anjuran dokter"
 LAB,Mikronutrien,Vit D,>=20.0-29.9,Insufisiensi vitamin D (Vitamin D 25-OH Total [XX.X] ng/mL),"Tingkatkan paparan sinar matahari pagi selama ±5–15 menit setiap hari, terutama pada area tangan dan kaki. Perbanyak konsumsi makanan kaya vitamin D (ikan laut, telur, susu, keju), serta pertimbangkan suplementasi vitamin D sesuai anjuran dokter"
@@ -308,18 +308,8 @@ def replace_placeholders(text, row_input, matched_code_variant):
         processed_text = re.sub(r"\b(Miopia|Hipermetropia|Presbiopia)\b", r"\1 Astigmatisme", processed_text, flags=re.IGNORECASE)
 
     # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
-    # Perluasan deteksi karena kode telah dipersingkat (LE, hema)
-    # Gunakan regex untuk mencari kata kunci LE atau hema di awal input secara case-insensitive
-    is_leuko = re.match(r"^LE\b", row_input, re.IGNORECASE)
-    is_hema = re.match(r"^hema\b", row_input, re.IGNORECASE)
-    
-    if (is_leuko or is_hema) and text.count("[text_input]") >= 2:
-        # Use matched_code_variant to strip the code from input
-        clean_input = row_input
-        if matched_code_variant:
-             pattern = re.compile(re.escape(matched_code_variant), re.IGNORECASE)
-             clean_input = pattern.sub("", row_input, count=1).strip()
-
+    if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
+        clean_input = re.sub(r"^(Leukosituria|Hematuria)\s*", "", row_input, flags=re.IGNORECASE).strip()
         match = re.search(r"^(.*?)(?:,?\s*sedimen\s*)(.*)$", clean_input, re.IGNORECASE)
         if match:
             val1 = match.group(1).strip()
