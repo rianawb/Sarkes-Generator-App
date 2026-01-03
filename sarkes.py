@@ -77,7 +77,7 @@ LAB,Hematologi,LKT,10.0-11.9,Peningkatan leukosit [XX.X] x 10^3/uL,Konsultasi de
 LAB,Hematologi,LKP,<4.0,Leukopenia [X.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukositosis
 LAB,Hematologi,Eos,>4.0,Eosinofilia [X.X] %,Hindari faktor pencetus alergi
 LAB,Hematologi,LED,>15,Peningkatan LED [XX] mm/jam,Jaga stamina tubuh Anda
-LAB,Hematologi,Fraksi HB,Ditemukan,Ditemukan fraksi hemoglobin varian,Lakukan pemeriksaan analisa hemoglobin
+LAB,Hematologi,Fraksi HB,,Ditemukan fraksi hemoglobin varian,Lakukan pemeriksaan analisa hemoglobin
 LAB,Hematologi,PLT,>=450,Trombositosis [XXX] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait trombositosis
 LAB,Glukosa,GDP,100-125,"Hiperglikemia, glukosa puasa [XXX] mg/dL --> suspek prediabetes","Turunkan kadar glukosa darah dan lakukan pemeriksaan HbA1c secara berkala setiap 3 bulan - Diet rendah gula dan karbohidrat"
 LAB,Glukosa,GDP,>=126,"Hiperglikemia, glukosa puasa [XXX] mg/dL --> suspek Diabetes Mellitus","Turunkan kadar glukosa darah dan lakukan pemeriksaan HbA1c secara berkala setiap 3 bulan - Diet rendah gula dan karbohidrat"
@@ -309,7 +309,10 @@ def replace_placeholders(text, row_input, matched_code_variant):
 
     # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
     if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
-        clean_input = re.sub(r"^(Leukosituria|Hematuria)\s*", "", row_input, flags=re.IGNORECASE).strip()
+        # Use regex to strip the code from input robustly (handling LE, hema, etc)
+        # We explicitly remove the code + optional space at the start
+        clean_input = re.sub(r"^(leukosituria|hematuria|le|hema)\s*", "", row_input, flags=re.IGNORECASE).strip()
+
         match = re.search(r"^(.*?)(?:,?\s*sedimen\s*)(.*)$", clean_input, re.IGNORECASE)
         if match:
             val1 = match.group(1).strip()
