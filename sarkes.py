@@ -4,9 +4,10 @@ import io
 import re
 
 # ==========================================
-# 1. KONFIGURASI HALAMAN
+# 1. KONFIGURASI HALAMAN & DATABASE
 # ==========================================
 
+# Menambahkan page_icon (ikon tab browser)
 st.set_page_config(
     page_title="Sarkes Generator", 
     layout="wide", 
@@ -29,16 +30,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# 2. DATABASE BILINGUAL (DIPERBARUI)
-# ==========================================
-# Menambahkan kolom: KESIMPULAN (English) dan SARAN KHUSUS (English)
 csv_data = """KATEGORI,JENIS PEMERIKSAAN,KODE,BATAS NILAI/PARAMETER,KESIMPULAN,SARAN KHUSUS,KESIMPULAN (English),SARAN KHUSUS (English)
 FISIK,Nadi,Taki,>100,Takikardia (nadi [XXX] kali/menit),Lakukan pemeriksaan EKG dan konsultasi dengan dokter spesialis jantung jika ada keluhan berdebar-debar atau nyeri dada,Tachycardia (pulse [XXX] bpm),"Perform an ECG evaluation and consult a cardiologist if palpitations or chest pain occur"
 FISIK,Nadi,Bradi,<60,Bradikardia (nadi [XX] kali/menit),"Lakukan pemeriksaan EKG dan konsultasi dengan dokter spesialis jantung jika ada keluhan berdebar-debar, pingsan atau nyeri dada",Bradycardia (pulse [XX] bpm),"Perform an ECG evaluation and consult a cardiologist if palpitations, fainting, or chest pain occur"
-FISIK,Tekanan Darah,PreHT,120-139/80-89,Prehipertensi (tekanan darah [XXX/XX] mmHg),Monitor tekanan darah secara berkala,Prehypertension (blood pressure [XXX/XX] mmHg),Monitor blood pressure regularly
-FISIK,Tekanan Darah,HT1,140-159/90-100,Hipertensi stage 1 (tekanan darah [XXX/XX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala,Stage 1 Hypertension (blood pressure [XXX/XX] mmHg),Take antihypertensive medication and monitor blood pressure regularly
-FISIK,Tekanan Darah,HT2,>=160/>=100,Hipertensi stage 2 (tekanan darah [XXX/XXX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala,Stage 2 Hypertension (blood pressure [XXX/XXX] mmHg),Take antihypertensive medication and monitor blood pressure regularly
+FISIK,Tekanan Darah,PreHT,120-139/80-89,Prehipertensi ([XXX/XX] mmHg),Monitor tekanan darah secara berkala,Prehypertension ([XXX/XX] mmHg),Monitor blood pressure regularly
+FISIK,Tekanan Darah,HT1,140-159/90-100,Hipertensi stage 1 ([XXX/XX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala,Stage 1 Hypertension ([XXX/XX] mmHg),Take antihypertensive medication and monitor blood pressure regularly
+FISIK,Tekanan Darah,HT2,>=160/>=100,Hipertensi stage 2 ([XXX/XXX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala,Stage 2 Hypertension ([XXX/XXX] mmHg),Take antihypertensive medication and monitor blood pressure regularly
 FISIK,Tekanan Darah,RHT TK,>=140/>=90,Riwayat hipertensi tidak terkontrol (tekanan darah saat ini [XXX/XX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala,Uncontrolled history of hypertension (current blood pressure [XXX/XX] mmHg),Take antihypertensive medication and monitor blood pressure regularly
 FISIK,Tekanan Darah,RHT Kontrol,<=140/<=90,Riwayat hipertensi terkontrol (tekanan darah saat ini [XXX/XX] mmHg),Minum obat antihipertensi dan monitor tekanan darah secara berkala,Controlled history of hypertension (current blood pressure [XXX/XX] mmHg),Take antihypertensive medication and monitor blood pressure regularly
 FISIK,Indeks Massa Tubuh,Sentral,">=25.0, LP >=80","Obesitas sentral (IMT [XX.X] kg/m2, lingkar perut [YY] cm)",Turunkan BB hingga BB ideal,"Central obesity (BMI [XX.X] kg/m2, abdominal circumference [YY] cm)",Reduce weight to ideal body weight
@@ -77,7 +74,7 @@ LAB,Hematologi,ANM,"HB <12.0, MCV <=80.0,  MCH <=26.0","Anemia mikrositik hipokr
 LAB,Hematologi,Eritro,>5.0,Eritrositosis [X.X] x 10^6/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait eritrositosis,Erythrocytosis [X.X] x 10^6/uL,Consult an internist for further examination and management of erythrocytosis
 LAB,Hematologi,LKS,>=12.0,Leukositosis [XX.X] x 10^3/uL --> suspek infeksi bakteri,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukositosis,Leukocytosis [XX.X] x 10^3/uL --> suspect bacterial infection,Consult an internist for further examination and management of leukocytosis
 LAB,Hematologi,LKT,10.0-11.9,Peningkatan leukosit [XX.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait peningkatan leukosit,Increased leukocytes [XX.X] x 10^3/uL,Consult an internist for further examination and management of increased leukocytes
-LAB,Hematologi,LKP,<4.0,Leukopenia [X.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukopenia,Leukopenia [X.X] x 10^3/uL,Consult an internist for further examination and management of leukopenia
+LAB,Hematologi,LKP,<4.0,Leukopenia [X.X] x 10^3/uL,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait leukositosis,Leukopenia [X.X] x 10^3/uL,Consult an internist for further examination and management of leukopenia
 LAB,Hematologi,Eos,>4.0,Eosinofilia [X.X] %,Hindari faktor pencetus alergi,Eosinophilia [X.X] %,Avoid allergy triggers
 LAB,Hematologi,LED,>15,Peningkatan LED [XX] mm/jam,Jaga stamina tubuh Anda,Increased ESR [XX] mm/hour,Maintain your body stamina
 LAB,Hematologi,Fraksi HB,,Ditemukan fraksi hemoglobin varian,Lakukan pemeriksaan analisa hemoglobin,Found hemoglobin variant fraction,Perform hemoglobin analysis
@@ -198,6 +195,8 @@ def check_criteria_match(input_val, criteria):
         return True
         
     # --- LOGIKA BARU UNTUK RDM (GDP & HbA1c) ---
+    # Jika input mengandung "RDM", maka criteria HARUS mengandung "RDM" juga.
+    # Jika input TIDAK mengandung "RDM", maka criteria TIDAK BOLEH mengandung "RDM".
     input_has_rdm = "RDM" in input_val.upper()
     criteria_has_rdm = "RDM" in criteria.upper()
     
@@ -243,85 +242,77 @@ def check_criteria_match(input_val, criteria):
         elif '>' in clean_crit: return val > limit
         elif '<' in clean_crit: return val < limit
     except:
-        pass 
+        pass # Gagal parsing, return False
         
     return False
 
 def find_best_match(input_line, db):
     """
     Mencari baris DB yang paling cocok dengan input line.
+    Menggunakan logika: Input harus DIAWALI oleh Kode DB.
     """
     input_line = input_line.strip()
     
     for idx, row in db.iterrows():
+        # Dapatkan semua variasi kode untuk baris ini
         code_variants = expand_code_variants(row['KODE'])
+        # Sort by length descending agar match yang terpanjang dulu (misal: 'ADS' sebelum 'AD')
         code_variants.sort(key=len, reverse=True)
         
         for code in code_variants:
+            # Cek apakah input diawali kode ini
             if input_line.lower().startswith(code.lower()):
+                # Ambil sisa string sebagai 'Value'
                 remainder = input_line[len(code):].strip()
+                
+                # Cek apakah 'Value' memenuhi kriteria Parameter
                 if check_criteria_match(remainder, row['BATAS NILAI/PARAMETER']):
                     return row, code, remainder
                     
     return None, None, None
 
-def replace_placeholders(text, row_input, matched_code_variant, lang='id'):
+def replace_placeholders(text, row_input, matched_code_variant):
     """
     Mengganti placeholder dengan nilai, cerdas konteks (OD/OS, dll).
-    Supports 'id' (Indonesian) and 'en' (English).
     """
     if not text: return ""
     processed_text = text
     
-    # --- Language Specific Maps ---
-    if lang == 'en':
-        od_map = {"ODS": "Both eyes", "OD": "Right eye", "OS": "Left eye"}
-        ad_map = {"ADS": "Both ears", "AD": "Right ear", "AS": "Left ear"}
-        side_map = {"DS": "Both", "D": "Right", "S": "Left"} # Generic
-        breast_map = {"DS": "Both breasts", "D": "Right breast", "S": "Left breast"}
-    else:
-        od_map = {"ODS": "Mata kanan dan kiri", "OD": "Mata kanan", "OS": "Mata kiri"}
-        ad_map = {"ADS": "Telinga kanan dan kiri", "AD": "Telinga kanan", "AS": "Telinga kiri"}
-        side_map = {"DS": "kanan dan kiri", "D": "kanan", "S": "kiri"}
-        breast_map = {"DS": "payudara kanan dan kiri", "D": "payudara kanan", "S": "payudara kiri"}
-
     # --- Logic 1: Mata & Telinga Contextual Replacement ---
     if "[OD; OS; ODS]" in processed_text:
-        replacement = "Mata" if lang == 'id' else "Eyes"
-        if matched_code_variant and "ODS" in matched_code_variant: replacement = od_map["ODS"]
-        elif matched_code_variant and "OD" in matched_code_variant: replacement = od_map["OD"]
-        elif matched_code_variant and "OS" in matched_code_variant: replacement = od_map["OS"]
+        replacement = "Mata"
+        if matched_code_variant and "ODS" in matched_code_variant: replacement = "Mata kanan dan kiri"
+        elif matched_code_variant and "OD" in matched_code_variant: replacement = "Mata kanan"
+        elif matched_code_variant and "OS" in matched_code_variant: replacement = "Mata kiri"
         processed_text = processed_text.replace("[OD; OS; ODS]", replacement)
 
     if "[AD; AS; ADS]" in processed_text:
-        replacement = "Telinga" if lang == 'id' else "Ears"
-        if matched_code_variant and "ADS" in matched_code_variant: replacement = ad_map["ADS"]
-        elif matched_code_variant and "AD" in matched_code_variant: replacement = ad_map["AD"]
-        elif matched_code_variant and "AS" in matched_code_variant: replacement = ad_map["AS"]
+        replacement = "Telinga"
+        if matched_code_variant and "ADS" in matched_code_variant: replacement = "Telinga kanan dan kiri"
+        elif matched_code_variant and "AD" in matched_code_variant: replacement = "Telinga kanan"
+        elif matched_code_variant and "AS" in matched_code_variant: replacement = "Telinga kiri"
         processed_text = processed_text.replace("[AD; AS; ADS]", replacement)
         
     if "[D; S; DS]" in processed_text:
         replacement = ""
+        # Cek dari input juga karena kadang kode tidak memuat sisi (misal Ketok)
         tokens = row_input.upper().split()
-        
-        # Check specific breast context if needed, otherwise generic
-        current_map = breast_map if ("payudara" in processed_text.lower() or "breast" in processed_text.lower()) else side_map
-        
-        if "DS" in tokens or (matched_code_variant and "DS" in matched_code_variant): replacement = current_map["DS"]
-        elif "D" in tokens or (matched_code_variant and "D" in matched_code_variant): replacement = current_map["D"]
-        elif "S" in tokens or (matched_code_variant and "S" in matched_code_variant): replacement = current_map["S"]
+        if "DS" in tokens or (matched_code_variant and "DS" in matched_code_variant): replacement = "kanan dan kiri"
+        elif "D" in tokens or (matched_code_variant and "D" in matched_code_variant): replacement = "kanan"
+        elif "S" in tokens or (matched_code_variant and "S" in matched_code_variant): replacement = "kiri"
         processed_text = processed_text.replace("[D; S; DS]", replacement)
 
     # --- Logic: Astigmatisme Check ---
+    # Jika input mengandung kata "astig" (case-insensitive), tambahkan "Astigmatisme" di belakang diagnosa.
     if "astig" in row_input.lower():
-        if lang == 'en':
-             processed_text = re.sub(r"\b(Myopia|Hypermetropia|Presbyopia)\b", r"\1 Astigmatism", processed_text, flags=re.IGNORECASE)
-        else:
-             processed_text = re.sub(r"\b(Miopia|Hipermetropia|Presbiopia)\b", r"\1 Astigmatisme", processed_text, flags=re.IGNORECASE)
+        processed_text = re.sub(r"\b(Miopia|Hipermetropia|Presbiopia)\b", r"\1 Astigmatisme", processed_text, flags=re.IGNORECASE)
 
     # --- Logic: Leukosituria & Hematuria (Complex Parsing) ---
-    if ("Leukosituria" in text or "Hematuria" in text or "Leukocyturia" in text) and text.count("[text_input]") >= 2:
+    if ("Leukosituria" in text or "Hematuria" in text) and text.count("[text_input]") >= 2:
+        # Use regex to strip the code from input robustly (handling LE, hema, etc)
+        # We explicitly remove the code + optional space at the start
         clean_input = re.sub(r"^(leukosituria|hematuria|le|hema)\s*", "", row_input, flags=re.IGNORECASE).strip()
+
         match = re.search(r"^(.*?)(?:,?\s*sedimen\s*)(.*)$", clean_input, re.IGNORECASE)
         if match:
             val1 = match.group(1).strip()
@@ -331,7 +322,7 @@ def replace_placeholders(text, row_input, matched_code_variant, lang='id'):
             return processed_text
 
     # --- Logic 2: Gigi (Parsing Khusus) ---
-    if "Gigi: Gigi Hilang" in text or "Teeth: Missing teeth" in text:
+    if "Gigi: Gigi Hilang" in text:
         clean_input = re.sub(r"^Gigi\s*", "", row_input, flags=re.IGNORECASE).strip()
         segments = [s.strip() for s in clean_input.split(',')]
         dental_map = {}
@@ -342,36 +333,27 @@ def replace_placeholders(text, row_input, matched_code_variant, lang='id'):
                 val = parts[1] if len(parts) > 1 else ""
                 dental_map[code] = val
         
-        # Template parts depends on language
-        if lang == 'en':
-             template_parts = [
-                ('X', 'missing teeth ([X])'), ('R', 'radix ([R])'), ('A', 'abrasion ([A])'),
-                ('C', 'caries ([C])'), ('E', 'calculus ([E])'), ('M', 'root canal treatment ([M])'),
-                ('F', 'filling ([F])'), ('I', 'impaction ([I])'), ('P', 'denture ([P])'), ('FR', 'fractured tooth ([FR])')
-            ]
-             prefix = "Teeth: "
-             default = "Teeth: No abnormalities"
-        else:
-             template_parts = [
-                ('X', 'gigi hilang ([X])'), ('R', 'sisa akar ([R])'), ('A', 'abrasi ([A])'),
-                ('C', 'karies ([C])'), ('E', 'karang gigi ([E])'), ('M', 'perawatan saluran akar ([M])'),
-                ('F', 'tumpatan ([F])'), ('I', 'impaksi ([I])'), ('P', 'gigi palsu ([P])'), ('FR', 'gigi patah ([FR])')
-            ]
-             prefix = "Gigi: "
-             default = "Gigi: Tidak ada kelainan"
-
+        # Perubahan: Template output menjadi lowercase untuk detail kondisi
+        template_parts = [
+            ('X', 'gigi hilang ([X])'), ('R', 'sisa akar ([R])'), ('A', 'abrasi ([A])'),
+            ('C', 'karies ([C])'), ('E', 'karang gigi ([E])'), ('M', 'perawatan saluran akar ([M])'),
+            ('F', 'tumpatan ([F])'), ('I', 'impaksi ([I])'), ('P', 'gigi palsu ([P])'), ('FR', 'gigi patah ([FR])')
+        ]
         active_items = []
         for code, template_phrase in template_parts:
             if code in dental_map:
                 active_items.append(template_phrase.replace(f"[{code}]", dental_map[code]))
         
-        if active_items: processed_text = prefix + ", ".join(active_items)
-        else: processed_text = default
+        if active_items: processed_text = "Gigi: " + ", ".join(active_items)
+        else: processed_text = "Gigi: Tidak ada kelainan"
         return processed_text
 
     # --- Logic 3: Numeric Placeholders ---
+    # Modifikasi: Gunakan sisa string setelah kode dibuang untuk mencari angka
+    # Hal ini mencegah angka di dalam Kode (misal "HbA1c", "HT1") terambil sebagai nilai result
     search_text = row_input
     if matched_code_variant:
+        # Hapus kode di awal string (case insensitive)
         pattern = re.compile(re.escape(matched_code_variant), re.IGNORECASE)
         search_text = pattern.sub("", row_input, count=1)
     
@@ -393,7 +375,8 @@ def replace_placeholders(text, row_input, matched_code_variant, lang='id'):
 
     # --- Logic 4: Text Input / Sisa ---
     if "[text_input]" in processed_text:
-        val = row_input
+        val = row_input # Default full
+        # Coba hapus kode matched (Case Insensitive)
         if matched_code_variant and row_input.lower().startswith(matched_code_variant.lower()):
             val = row_input[len(matched_code_variant):].strip()
         processed_text = processed_text.replace("[text_input]", val)
@@ -412,54 +395,64 @@ def replace_placeholders(text, row_input, matched_code_variant, lang='id'):
     return processed_text
 
 def get_lifestyle_advice(conclusion_text):
-    keywords = ["obesitas", "overweight", "prehipertensi", "hipertensi", "prediabetes", "diabetes", 
-                "obesity", "hyperglycemia", "hypertension"] # Added English keywords
+    keywords = ["obesitas", "overweight", "prehipertensi", "hipertensi", "prediabetes", "diabetes"]
     con_lower = conclusion_text.lower()
     return any(k in con_lower for k in keywords)
 
-def handle_multi_visus(line, db, lang='id'):
+def handle_multi_visus(line, db):
+    # Cek apakah ini baris Visus ganda
+    # Cari semua pasangan Kode Visus (misal: OS Miop, ODS Pres)
     visus_matches = re.findall(r"\b(OD|OS|ODS)\s+(Miop|Hiper|Pres)\b", line, re.IGNORECASE)
+    
+    # Cari parameter (TKM/DKM/Koreksi)
     param_match = re.search(r"\b(TKM|DKM|Koreksi)\b", line, re.IGNORECASE)
     
+    # Syarat: Minimal 2 kode visus DAN 1 parameter ditemukan
     if len(visus_matches) >= 2 and param_match:
         param = param_match.group(0)
+        
         parts_conclusions = []
         collected_advices = []
         suffix = ""
         
         for side, cond in visus_matches:
+            # Bikin input sintetis: "OS Miop TKM"
+            # Sertakan "astig" jika ada di input asli agar logic di replace_placeholders jalan
             synthetic_input = f"{side} {cond} {param}"
             if "astig" in line.lower():
                 synthetic_input += " astig"
             
+            # Cari match di DB
             match_row, matched_code, remainder = find_best_match(synthetic_input, db)
             
             if match_row is not None:
-                # Select column based on lang
-                col_conc = 'KESIMPULAN' if lang == 'id' else 'KESIMPULAN (English)'
-                col_adv = 'SARAN KHUSUS' if lang == 'id' else 'SARAN KHUSUS (English)'
-
-                raw_conc = str(match_row[col_conc])
-                final_conc = replace_placeholders(raw_conc, synthetic_input, matched_code, lang)
+                # Proses Kesimpulan
+                raw_conc = str(match_row['KESIMPULAN'])
+                final_conc = replace_placeholders(raw_conc, synthetic_input, matched_code)
                 
+                # Split untuk ambil bagian depan (diagnosis) dan belakang (status kacamata)
+                # Asumsi format: "Mata kiri Miopia, tanpa kacamata"
                 if "," in final_conc:
                     parts = final_conc.split(",", 1)
                     core = parts[0].strip()
-                    suffix = parts[1].strip()
+                    suffix = parts[1].strip() # Akan overwrite, tapi harusnya sama
                     parts_conclusions.append(core)
                 else:
                     parts_conclusions.append(final_conc)
                 
-                raw_adv = str(match_row[col_adv])
-                final_adv = replace_placeholders(raw_adv, synthetic_input, matched_code, lang)
+                # Proses Saran
+                raw_adv = str(match_row['SARAN KHUSUS'])
+                final_adv = replace_placeholders(raw_adv, synthetic_input, matched_code)
                 if final_adv:
                     collected_advices.append(final_adv)
         
+        # Gabungkan Kesimpulan
         if parts_conclusions:
             if suffix:
                 merged_conclusion = ", ".join(parts_conclusions) + ", " + suffix
             else:
                 merged_conclusion = ", ".join(parts_conclusions)
+            
             return merged_conclusion, collected_advices
             
     return None, None
@@ -467,130 +460,87 @@ def handle_multi_visus(line, db, lang='id'):
 def process_patient_block(block, db):
     lines = [l.strip() for l in block.strip().split('\n') if l.strip()]
     
+    # MODIFIKASI: Hanya butuh 2 baris awal (ID & Nama)
     if len(lines) < 2: 
         return "Error: Data pasien tidak lengkap (Minimal: ID dan Nama)."
     
     p_id = lines[0]
-    p_name = lines[1].upper()
+    p_name = lines[1].upper() # Update to upper
+    
+    # MODIFIKASI: Data pemeriksaan dimulai dari baris ke-3 (index 2)
+    # Melewati Umur dan Jenis Kelamin
     exam_lines = lines[2:]
     
-    conclusions_id = []
-    advices_id = []
-    conclusions_en = []
-    advices_en = []
-    
-    work_status_id = "Saran Kesehatan Kerja: Belum diinput"
-    work_status_en = "Saran Kesehatan Kerja (English): Not input yet"
+    conclusions = []
+    advices = []
+    work_status = "Saran Kesehatan Kerja: Belum diinput"
     needs_lifestyle = False
     
     for line in exam_lines:
         line_clean = line.strip()
         if line_clean.upper() == "FWN":
-            work_status_id = "Saran Kesehatan Kerja: Sehat untuk bekerja dengan catatan"
-            work_status_en = "Saran Kesehatan Kerja (English): Fit with Notes"
+            work_status = "Saran Kesehatan Kerja: Sehat untuk bekerja dengan catatan"
             continue
         if line_clean.lower().startswith("temporary "):
             desc = re.sub(r"^temporary\s+", "", line_clean, flags=re.IGNORECASE)
-            work_status_id = f"Saran Kesehatan Kerja: Tidak sehat untuk bekerja untuk sementara waktu ({desc})\n*Jika sudah melakukan konsultasi dengan dokter spesialis, mendapat tatalaksana dan hasil evaluasi membaik maka Sehat untuk bekerja dengan catatan"
-            work_status_en = f"Saran Kesehatan Kerja (English): Temporary unfit ({desc})\n*If specialist consultation and management have been completed with improved results, the patient is fit for work with notes"
+            work_status = f"Saran Kesehatan Kerja: Tidak sehat untuk bekerja untuk sementara waktu ({desc})\n*Jika sudah melakukan konsultasi dengan dokter spesialis, mendapat tatalaksana dan hasil evaluasi membaik maka Sehat untuk bekerja dengan catatan"
             continue
             
-        # -- INDONESIA PROCESSING --
-        multi_conc_id, multi_adv_id = handle_multi_visus(line, db, lang='id')
-        if multi_conc_id:
-            conclusions_id.append(multi_conc_id)
-            if multi_adv_id: advices_id.extend(multi_adv_id)
-        else:
-            match_row, matched_code, remainder = find_best_match(line, db)
-            if match_row is not None:
-                raw_conc = str(match_row['KESIMPULAN'])
-                final_conc = replace_placeholders(raw_conc, line, matched_code, lang='id')
-                raw_adv = str(match_row['SARAN KHUSUS'])
-                final_adv = replace_placeholders(raw_adv, line, matched_code, lang='id')
-                
-                if final_conc:
-                    conclusions_id.append(final_conc)
-                    if get_lifestyle_advice(final_conc): needs_lifestyle = True
-                if final_adv:
-                    advices_id.append(final_adv)
-            else:
-                conclusions_id.append(line) # Fallback if no match
+        # Check for Multi Visus case first
+        multi_conc, multi_adv = handle_multi_visus(line, db)
+        if multi_conc:
+            conclusions.append(multi_conc)
+            if multi_adv:
+                advices.extend(multi_adv)
+            continue
 
-        # -- ENGLISH PROCESSING --
-        # Re-run logic for English to handle placeholders correctly
-        multi_conc_en, multi_adv_en = handle_multi_visus(line, db, lang='en')
-        if multi_conc_en:
-            conclusions_en.append(multi_conc_en)
-            if multi_adv_en: advices_en.extend(multi_adv_en)
+        # Normal matching
+        match_row, matched_code, remainder = find_best_match(line, db)
+        
+        if match_row is not None:
+            # Kesimpulan
+            raw_conc = str(match_row['KESIMPULAN'])
+            final_conc = replace_placeholders(raw_conc, line, matched_code)
+            
+            # Saran
+            raw_adv = str(match_row['SARAN KHUSUS'])
+            final_adv = replace_placeholders(raw_adv, line, matched_code)
+            
+            if final_conc:
+                conclusions.append(final_conc)
+                if get_lifestyle_advice(final_conc): needs_lifestyle = True
+            if final_adv:
+                advices.append(final_adv)
         else:
-            match_row, matched_code, remainder = find_best_match(line, db)
-            if match_row is not None:
-                raw_conc_en = str(match_row['KESIMPULAN (English)'])
-                # Handle empty English fields if any
-                if raw_conc_en == 'nan' or not raw_conc_en: raw_conc_en = ""
-                
-                final_conc_en = replace_placeholders(raw_conc_en, line, matched_code, lang='en')
-                
-                raw_adv_en = str(match_row['SARAN KHUSUS (English)'])
-                if raw_adv_en == 'nan' or not raw_adv_en: raw_adv_en = ""
-                
-                final_adv_en = replace_placeholders(raw_adv_en, line, matched_code, lang='en')
-                
-                if final_conc_en: conclusions_en.append(final_conc_en)
-                if final_adv_en: advices_en.append(final_adv_en)
-            else:
-                # If input has no match in DB, just print it as is (often text input)
-                conclusions_en.append(line)
+            conclusions.append(line)
 
-    # OUTPUT CONSTRUCTION
     output_str = f"{p_id}\n{p_name}\n\nKesimpulan:\n"
-    for c in conclusions_id: output_str += f"{c}\n"
+    for c in conclusions: output_str += f"{c}\n"
     
     output_str += "\nSaran:\n"
-    final_advices_id = []
+    final_advices = []
     if needs_lifestyle:
-        final_advices_id.extend(["Jaga pola hidup sehat", "Olahraga secara teratur 3-5x/minggu, minimal 30 menit"])
+        final_advices.extend(["Jaga pola hidup sehat", "Olahraga secara teratur 3-5x/minggu, minimal 30 menit"])
     
-    seen_adv = set(final_advices_id)
-    for adv in advices_id:
+    seen_adv = set(final_advices)
+    for adv in advices:
         normalized_adv = adv.replace(" - ", "\n")
         subs = [s.strip().lstrip('-').strip() for s in normalized_adv.split('\n')]
         for sub in subs:
             if sub and sub not in seen_adv:
-                final_advices_id.append(sub)
+                final_advices.append(sub)
                 seen_adv.add(sub)
-    for fa in final_advices_id: output_str += f"{fa}\n"
+                
+    for fa in final_advices: output_str += f"{fa}\n"
     
-    output_str += f"\n{work_status_id}\n"
-
-    # ENGLISH SECTION
-    output_str += "\nKesimpulan (English):\n"
-    for c in conclusions_en: output_str += f"{c}\n"
-
-    output_str += "\nSaran (English):\n"
-    final_advices_en = []
-    if needs_lifestyle:
-        final_advices_en.extend(["Maintain a healthy lifestyle", "Exercise regularly 3–5 times per week, at least 30 minutes per session"])
-    
-    seen_adv_en = set(final_advices_en)
-    for adv in advices_en:
-        # Check for English delimiters if any, usually same structure
-        normalized_adv = adv.replace(" - ", "\n")
-        subs = [s.strip().lstrip('-').strip() for s in normalized_adv.split('\n')]
-        for sub in subs:
-            if sub and sub not in seen_adv_en:
-                final_advices_en.append(sub)
-                seen_adv_en.add(sub)
-    
-    for fa in final_advices_en: output_str += f"{fa}\n"
-    
-    output_str += f"\n{work_status_en}"
-
+    output_str += f"\n{work_status}"
     return output_str
 
 # ==========================================
 # 3. MAIN APP
 # ==========================================
+
+st.set_page_config(page_title="Sarkes Generator", layout="wide", page_icon="🏥")
 
 st.title("🏥 Sarkes Generator (Resume MCU)")
 st.markdown("""
@@ -605,7 +555,6 @@ Aplikasi untuk menyusun Resume Hasil Medical Check Up berdasarkan database. <a h
 # Load DB
 try:
     db = load_db(csv_data)
-    # Ensure columns are clean
     db.columns = [c.strip() for c in db.columns]
 except Exception as e:
     st.error(f"Gagal memuat database: {e}")
@@ -622,6 +571,7 @@ if st.button("Proses Sarkes"):
         st.subheader("Hasil Resume (Sarkes)")
         st.text_area("Output", value="\n\n".join(results), height=400)
         
+        # Add the code block for copy all functionality
         st.code("\n\n".join(results), language="markdown")
 
 # Footer
