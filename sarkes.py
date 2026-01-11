@@ -7,6 +7,7 @@ import re
 # 1. KONFIGURASI HALAMAN & DATABASE
 # ==========================================
 
+# Menambahkan page_icon (ikon tab browser)
 st.set_page_config(
     page_title="Sarkes Generator", 
     layout="wide", 
@@ -29,7 +30,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Database dengan kolom Inggris dikembalikan
 csv_data = """KATEGORI,JENIS PEMERIKSAAN,KODE,BATAS NILAI/PARAMETER,KESIMPULAN,SARAN KHUSUS,KESIMPULAN (English),SARAN KHUSUS (English)
 FISIK,Nadi,Taki,>100,Takikardia (nadi [XXX] kali/menit),Lakukan pemeriksaan EKG dan konsultasi dengan dokter spesialis jantung jika ada keluhan berdebar-debar atau nyeri dada,Tachycardia (pulse [XXX] bpm),"Perform an ECG evaluation and consult a cardiologist if palpitations or chest pain occur"
 FISIK,Nadi,Bradi,<60,Bradikardia (nadi [XX] kali/menit),"Lakukan pemeriksaan EKG dan konsultasi dengan dokter spesialis jantung jika ada keluhan berdebar-debar, pingsan atau nyeri dada",Bradycardia (pulse [XX] bpm),"Perform an ECG evaluation and consult a cardiologist if palpitations, fainting, or chest pain occur"
@@ -41,7 +41,7 @@ FISIK,Tekanan Darah,RHT Kontrol,<=140/<=90,Riwayat hipertensi terkontrol (tekana
 FISIK,Indeks Massa Tubuh,Sentral,">=25.0, LP >=80","Obesitas sentral (IMT [XX.X] kg/m2, lingkar perut [YY] cm)",Turunkan BB hingga BB ideal,"Central obesity (BMI [XX.X] kg/m2, abdominal circumference [YY] cm)",Reduce weight to ideal body weight
 FISIK,Indeks Massa Tubuh,Obes,>=25.0,Obesitas (IMT [XX.X] kg/m2),Turunkan BB hingga BB ideal,Obesity (BMI [XX.X] kg/m2),Reduce weight to ideal body weight
 FISIK,Indeks Massa Tubuh,Over,23.0-24.9,Overweight (IMT [XX.X] kg/m2),Turunkan BB hingga BB ideal,Overweight (BMI [XX.X] kg/m2),Reduce weight to ideal body weight
-FISIK,Indeks Massa Tubuh,Under,<18.5,Underweight (IMT [XX.X] kg/m2),"Tingkatkan BB hingga BB ideal - Tingkatkan asupan protein dan olahraga secara teratur (3-5x/minggu, minimal 30 menit) untuk meningkatkan massa otot",Underweight (BMI [XX.X] kg/m2),"Increase body weight to ideal weight - Increase protein intake and exercise regularly (3-5x/week, at least 30 minutes) to increase muscle mass"
+FISIK,Indeks Massa Tubuh,Under,<18.5,Underweight (IMT [XX.X] kg/m2),"Tingkatkan asupan protein dan olahraga secara teratur (3-5x/minggu, minimal 30 menit) untuk meningkatkan massa otot",Underweight (BMI [XX.X] kg/m2),"Increase body weight to ideal weight - Increase protein intake and exercise regularly (3-5x/week, at least 30 minutes) to increase muscle mass"
 FISIK,Visus,[OD; OS; ODS] Miop,TKM,"[OD; OS; ODS] Miopia, tanpa kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai,"Myopia on [OD; OS; ODS], without glasses",Consult an ophthalmologist for visual acuity correction with appropriate glasses
 FISIK,Visus,[OD; OS; ODS] Miop,DKM,"[OD; OS; ODS] Miopia, belum terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata untuk koreksi visus mata dengan kacamata yang sesuai,"Myopia on [OD; OS; ODS], not optimally corrected with glasses",Consult an ophthalmologist for visual acuity correction with appropriate glasses
 FISIK,Visus,[OD; OS; ODS] Miop,Koreksi,"[OD; OS; ODS] Miopia, terkoreksi optimal dengan kacamata",Konsultasi dengan dokter spesialis mata jika ada keluhan penurunan penglihatan dengan kacamata yang sudah ada,"Myopia on [OD; OS; ODS], optimally corrected with glasses",Consult an ophthalmologist if there are complaints of decreased vision with existing glasses
@@ -386,14 +386,20 @@ def replace_placeholders(text, row_input, matched_code_variant, lang='id'):
     if "[XXX/XX]" in processed_text and "/" in row_input:
         match = re.search(r"(\d+/\d+)", row_input)
         if match: processed_text = processed_text.replace("[XXX/XX]", match.group(1))
-    
+
+    # Tensi dengan 3 digit (HT2)
+    if "[XXX/XXX]" in processed_text and "/" in row_input:
+        match = re.search(r"(\d+/\d+)", row_input)
+        if match: processed_text = processed_text.replace("[XXX/XXX]", match.group(1))
+
     placeholders = re.findall(r"\[[A-Z\.]+\]", processed_text)
     numeric_placeholders = [p for p in placeholders if "OD" not in p and "AD" not in p and "DS" not in p and "text" not in p and "G" not in p]
     
     idx_num = 0
     for ph in numeric_placeholders:
         if ph in processed_text and idx_num < len(numbers):
-            if "/" in row_input and ("XXX/XX" in ph): continue 
+            # Skip jika placeholder Tensi sudah dihandle
+            if "/" in row_input and ("XXX/XX" in ph or "XXX/XXX" in ph): continue 
             processed_text = processed_text.replace(ph, numbers[idx_num], 1)
             idx_num += 1
 
@@ -487,19 +493,19 @@ def process_patient_block(block, db):
     advices_en = []
     
     work_status_id = "Saran Kesehatan Kerja: Belum diinput"
-    work_status_en = "Saran Kesehatan Kerja (English): Not input yet"
+    work_status_en = "Occupational Health Recommendation: Not input yet"
     needs_lifestyle = False
     
     for line in exam_lines:
         line_clean = line.strip()
         if line_clean.upper() == "FWN":
             work_status_id = "Saran Kesehatan Kerja: Sehat untuk bekerja dengan catatan"
-            work_status_en = "Saran Kesehatan Kerja (English): Fit with Notes"
+            work_status_en = "Occupational Health Recommendation: Fit with Notes"
             continue
         if line_clean.lower().startswith("temporary "):
             desc = re.sub(r"^temporary\s+", "", line_clean, flags=re.IGNORECASE)
             work_status_id = f"Saran Kesehatan Kerja: Tidak sehat untuk bekerja untuk sementara waktu ({desc})\n*Jika sudah melakukan konsultasi dengan dokter spesialis, mendapat tatalaksana dan hasil evaluasi membaik maka Sehat untuk bekerja dengan catatan"
-            work_status_en = f"Saran Kesehatan Kerja (English): Temporary unfit ({desc})\n*If specialist consultation and management have been completed with improved results, the patient is fit for work with notes"
+            work_status_en = f"Occupational Health Recommendation: Temporary unfit ({desc})\n*If specialist consultation and management have been completed with improved results, the patient is fit for work with notes"
             continue
             
         # -- INDONESIA PROCESSING --
@@ -571,10 +577,10 @@ def process_patient_block(block, db):
     output_str += f"\n{work_status_id}\n"
 
     # ENGLISH SECTION
-    output_str += "\nKesimpulan (English):\n"
+    output_str += "\nConclusion:\n"
     for c in conclusions_en: output_str += f"{c}\n"
 
-    output_str += "\nSaran (English):\n"
+    output_str += "\nRecommendation:\n"
     final_advices_en = []
     if needs_lifestyle:
         final_advices_en.extend(["Maintain a healthy lifestyle", "Exercise regularly 3–5 times per week, at least 30 minutes per session"])
