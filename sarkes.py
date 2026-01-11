@@ -281,10 +281,10 @@ def replace_placeholders(text, row_input, matched_code_variant, lang='id'):
     
     # --- Language Specific Maps ---
     if lang == 'en':
-        od_map = {"ODS": "Both eyes", "OD": "Right eye", "OS": "Left eye"}
-        ad_map = {"ADS": "Both ears", "AD": "Right ear", "AS": "Left ear"}
-        side_map = {"DS": "Both", "D": "Right", "S": "Left"} # Generic
-        breast_map = {"DS": "Both breasts", "D": "Right breast", "S": "Left breast"}
+        od_map = {"ODS": "both eyes", "OD": "the right eye", "OS": "the left eye"}
+        ad_map = {"ADS": "both ears", "AD": "the right ear", "AS": "the left ear"}
+        side_map = {"DS": "both sides", "D": "the right", "S": "the left"} # Generic
+        breast_map = {"DS": "both", "D": "the right", "S": "the left"}
     else:
         od_map = {"ODS": "Mata kanan dan kiri", "OD": "Mata kanan", "OS": "Mata kiri"}
         ad_map = {"ADS": "Telinga kanan dan kiri", "AD": "Telinga kanan", "AS": "Telinga kiri"}
