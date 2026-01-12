@@ -631,6 +631,7 @@ def process_patient_block(block, db):
 # ==========================================
 
 st.title("🏥 Sarkes Generator (Resume MCU)")
+st.markdown("Database sarkes dan format pengisian sarkes [klik disini](https://docs.google.com/spreadsheets/d/1LTL7hF06A-fFJBKqqouIfMUiIPzw1gc22-aIRHdUD3g/edit?usp=sharing).")
 st.markdown("""
 
 **Cara Pakai:**
