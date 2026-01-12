@@ -62,7 +62,7 @@ FISIK,Mammae,MM [D; S; DS],,Benjolan di payudara [D; S; DS],Konsultasi dengan do
 FISIK,Thoraks,Jantung,Bising,Terdapat bising jantung,Konsultasi dengan dokter spesialis jantung untuk pemeriksaan dan tata laksana lebih lanjut terkait temuan jantung abnormal,Heart murmur,Consult a cardiologist for further evaluation and management of abnormal heart findings
 FISIK,Thoraks,Paru,Wheezing,Terdapat wheezing pada paru,Konsultasi dengan dokter spesialis paru untuk pemeriksaan dan tata laksana lebih lanjut terkait temuan paru abnormal,Wheezing in lungs,Consult a pulmonologist for further evaluation and management of abnormal lung findings
 FISIK,Abdomen,NT,Epi,Nyeri tekan epigastrium,Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait nyeri tekan epigastrium,Epigastric tenderness,Consult an internist for further evaluation and management of epigastric tenderness
-FISIK,Abdomen,Ketok [D; S; DS],,Nyeri ketok ginjal [D; S; DS],Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait nyeri ketok ginjal [D; S; DS],CVA tenderness [D; S; DS],Consult an internist for further evaluation and management of CVA tenderness [D; S; DS]
+FISIK,Abdomen,Ketok [D; S; DS],,Nyeri ketok ginjal [D; S; DS],Konsultasi dengan dokter spesialis penyakit dalam untuk pemeriksaan dan tata laksana lebih lanjut terkait nyeri ketok ginjal [D; S; DS],[D; S; DS] Costovertebral angle tenderness,Consult an internist for further evaluation and management of [D; S; DS] Costovertebral angle tenderness
 FISIK,Genital perianal,HI,Grade 1-4,Hemorrhoid interna grade [G],"Tingkatkan asupan serat (sayur dan buah), minum air putih minimal 2L/hari dan hindari aktivitas duduk terlalu lama - Konsultasi dengan dokter spesialis bedah untuk pemeriksaan dan tata laksana lebih lanjut terkait temuan hemorroid interna",Grade [G] Internal hemorrhoid,"Increase fiber intake (vegetables and fruits), drink at least 2L of water/day, and avoid prolonged sitting - Consult a surgeon for further evaluation and management of internal hemorrhoid findings"
 FISIK,Genital perianal,HE,Eksterna,Hemorrhoid eksterna,"Tingkatkan asupan serat (sayur dan buah), minum air putih minimal 2L/hari dan hindari aktivitas duduk terlalu lama - Konsultasi dengan dokter spesialis bedah untuk pemeriksaan dan tata laksana lebih lanjut terkait temuan hemorroid eksterna",External hemorrhoid,"Increase fiber intake (vegetables and fruits), drink at least 2L of water/day and avoid prolonged sitting - Consult a surgeon for further evaluation and management of external hemorrhoids"
 FISIK,Ekstremitas,EXT Kaki O,,Bentuk kaki O,Konsultasi dengan dokter spesialis orthopedi untuk pemeriksaan dan tata laksana lebih lanjut terkait temuan bentuk kaki O,O-shaped legs,Consult an orthopedic specialist for further evaluation and management of O-shaped legs
@@ -317,13 +317,31 @@ def replace_placeholders(text, row_input, matched_code_variant, lang='id'):
         # Cek dari input juga karena kadang kode tidak memuat sisi (misal Ketok)
         tokens = row_input.upper().split()
         
-        # Check specific breast context if needed, otherwise generic
-        current_map = breast_map if ("payudara" in processed_text.lower() or "breast" in processed_text.lower()) else side_map
+        current_map = side_map
         
-        if "DS" in tokens or (matched_code_variant and "DS" in matched_code_variant): replacement = current_map["DS"]
-        elif "D" in tokens or (matched_code_variant and "D" in matched_code_variant): replacement = current_map["D"]
-        elif "S" in tokens or (matched_code_variant and "S" in matched_code_variant): replacement = current_map["S"]
-        processed_text = processed_text.replace("[D; S; DS]", replacement)
+        # Context checks
+        lower_text = processed_text.lower()
+        if "payudara" in lower_text or "breast" in lower_text:
+            current_map = breast_map
+        elif lang == 'en' and "costovertebral angle tenderness" in lower_text:
+            # Check for DS specifically for the phrasing change
+            # Pattern: [D; S; DS] Costovertebral angle tenderness -> Costovertebral angle tenderness on both sides
+            if "DS" in tokens or (matched_code_variant and "DS" in matched_code_variant):
+                 processed_text = re.sub(r"\[D; S; DS\]\s*Costovertebral angle tenderness", "Costovertebral angle tenderness on both sides", processed_text, flags=re.IGNORECASE)
+                 # Since placeholder is gone, we can skip the standard replacement logic below
+            else:
+                 # D or S logic
+                 if processed_text.strip().startswith("[D; S; DS]"):
+                     current_map = {"DS": "Bilateral", "D": "Right", "S": "Left"}
+                 else:
+                     current_map = {"DS": "bilateral", "D": "the right", "S": "the left"}
+
+        # Standard Replacement (Only runs if placeholder still exists)
+        if "[D; S; DS]" in processed_text:
+            if "DS" in tokens or (matched_code_variant and "DS" in matched_code_variant): replacement = current_map["DS"]
+            elif "D" in tokens or (matched_code_variant and "D" in matched_code_variant): replacement = current_map["D"]
+            elif "S" in tokens or (matched_code_variant and "S" in matched_code_variant): replacement = current_map["S"]
+            processed_text = processed_text.replace("[D; S; DS]", replacement)
 
     # --- Logic: Astigmatisme Check ---
     if "astig" in row_input.lower():
