@@ -608,12 +608,11 @@ def process_patient_block(block, db):
 
 st.title("🏥 Sarkes Generator (Resume MCU)")
 st.markdown("""
-Aplikasi untuk menyusun Resume Hasil Medical Check Up berdasarkan database. <a href="https://docs.google.com/spreadsheets/d/1VVD2VMYPVzjR9HAtJkdykx4dQZsONfSUPQMowXUTpKQ/edit?usp=sharing" target="_blank">Lihat Database</a>
 
 **Cara Pakai:**
 
 1. Masukkan data pasien di kolom input (Untuk Multi-pasien gunakan pemisah `===PATIENT===`).
-2. Klik tombol **Proses**.
+2. Klik tombol **Proses Sarkes**.
 """, unsafe_allow_html=True)
 
 # Load DB
