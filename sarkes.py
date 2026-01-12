@@ -501,7 +501,7 @@ def process_patient_block(block, db):
         line_clean = line.strip()
         if line_clean.upper() == "FWN":
             work_status_id = "Saran Kesehatan Kerja: Sehat untuk bekerja dengan catatan"
-            work_status_en = "Occupational Health Recommendation: Fit with Notes"
+            work_status_en = "Occupational Health Recommendation: Fit with Note"
             continue
         if line_clean.lower().startswith("temporary "):
             desc = re.sub(r"^temporary\s+", "", line_clean, flags=re.IGNORECASE)
