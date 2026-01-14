@@ -525,7 +525,7 @@ def process_patient_block(block, db):
     needs_lifestyle = False
     
     for line in exam_lines:
-        line_clean = line.strip()
+        line_clean = line.strip().replace('\xa0', ' ') # Fix non-breaking space
         if line_clean.upper() == "FWN":
             work_status_id = "Saran Kesehatan Kerja: Sehat untuk bekerja dengan catatan"
             work_status_en = "Occupational Health Recommendation: Fit with Note"
