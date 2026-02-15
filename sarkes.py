@@ -9,7 +9,7 @@ import re
 
 # Menambahkan page_icon (ikon tab browser)
 st.set_page_config(
-    page_title="New Sarkes Generator", 
+    page_title="Sarkes Generator", 
     layout="wide", 
     page_icon="🏥"
 )
